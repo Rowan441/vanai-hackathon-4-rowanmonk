@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Music Taste Matcher - Find Your Twin</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+  </head>
+  <body>
+    <div class="background"></div>
+    <canvas id="particles"></canvas>
+
+    <div class="container">
+      <div class="header">
+        <h1>🎵 MUSIC TASTE MATCHER</h1>
+        <p class="subtitle">FIND YOUR SONIC TWIN</p>
+      </div>
+
+      <!-- Welcome Screen -->
+      <div id="welcomeScreen" class="welcome-screen">
+        <div class="question-card">
+          <h2>Ready to find your music taste twin?</h2>
+          <p>
+            Answer 6 quick questions and we'll match you with someone who shares
+            your musical DNA.
+          </p>
+          <button class="btn-start" onclick="startQuestionnaire()">
+            BEGIN JOURNEY
+          </button>
+        </div>
+      </div>
+
+      <!-- Progress Bar -->
+      <div id="progressContainer" class="progress-container hidden">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+
+      <!-- Question Card -->
+      <div id="questionCard" class="question-card hidden">
+        <div class="question-number" id="questionNumber">QUESTION 1/6</div>
+        <div class="question-text" id="questionText"></div>
+        <div class="question-hint" id="questionHint"></div>
+
+        <div class="input-wrapper">
+          <textarea
+            id="answerInput"
+            placeholder="Type your answer here..."
+            oninput="checkAnswer()"
+            onkeydown="handleKeyPress(event)"
+          ></textarea>
+        </div>
+
+        <div class="button-container">
+          <button
+            class="btn-next"
+            onclick="nextQuestion()"
+            id="nextBtn"
+            disabled
+          >
+            NEXT →
+          </button>
+          <button class="btn-back" onclick="previousQuestion()" id="backBtn">
+            ← BACK
+          </button>
+        </div>
+      </div>
+
+      <!-- Results Screen -->
+      <div id="resultsScreen" class="question-card hidden">
+        <div class="results">
+          <h2>Finding your perfect match...</h2>
+          <div class="spinner"></div>
+          <p style="color: #999; margin-top: 20px">
+            Analyzing your musical DNA...
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const questions = [
+        {
+          id: 1,
+          question: "What's your relationship with music like?",
+          placeholder:
+            "e.g., 'It's my whole life' or 'I'm pretty casual about it'",
+          hint: "💡 Just a sentence or two",
+        },
+        {
+          id: 2,
+          question: "How did you first discover music you loved?",
+          placeholder:
+            "e.g., 'My dad's vinyl collection' or 'TikTok algorithm'",
+          hint: "💡 What was the gateway?",
+        },
+        {
+          id: 3,
+          question: "What kind of music are you into these days?",
+          placeholder: "e.g., 'Sad girl indie' or 'Anything I can dance to'",
+          hint: "💡 Vibe, genre, mood - whatever",
+        },
+        {
+          id: 4,
+          question: "Real talk - how do you feel about AI making music?",
+          placeholder:
+            "e.g., 'If it's good, it's good' or 'Nah, needs human soul'",
+          hint: "💡 No judgment, just curious",
+        },
+        {
+          id: 5,
+          question:
+            "What about AI using dead artists' voices to make new songs?",
+          placeholder: "e.g., 'Kinda cool' or 'Feels wrong to me'",
+          hint: "💡 First reaction is fine",
+        },
+        {
+          id: 6,
+          question: "Do you share music with people, or keep it to yourself?",
+          placeholder:
+            "e.g., 'Always sending songs' or 'It's my private thing'",
+          hint: "💡 How social are you with your taste?",
+        },
+      ];
+
+      let currentQuestion = 0;
+      let answers = {};
+
+      // Particle animation
+      const canvas = document.getElementById("particles");
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const particles = [];
+      const particleCount = 100;
+
+      class Particle {
+        constructor() {
+          this.x = Math.random() * canvas.width;
+          this.y = Math.random() * canvas.height;
+          this.size = Math.random() * 2 + 0.5;
+          this.speedX = Math.random() * 0.5 - 0.25;
+          this.speedY = Math.random() * 0.5 - 0.25;
+          this.opacity = Math.random() * 0.5 + 0.2;
+        }
+
+        update() {
+          this.x += this.speedX;
+          this.y += this.speedY;
+
+          if (this.x > canvas.width) this.x = 0;
+          if (this.x < 0) this.x = canvas.width;
+          if (this.y > canvas.height) this.y = 0;
+          if (this.y < 0) this.y = canvas.height;
+        }
+
+        draw() {
+          ctx.fillStyle = `rgba(102, 126, 234, ${this.opacity})`;
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      for (let i = 0; i < particleCount; i++) {
+        particles.push(new Particle());
+      }
+
+      function animateParticles() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        particles.forEach((particle) => {
+          particle.update();
+          particle.draw();
+        });
+
+        // Draw connections
+        particles.forEach((a, i) => {
+          particles.slice(i + 1).forEach((b) => {
+            const dx = a.x - b.x;
+            const dy = a.y - b.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < 100) {
+              ctx.strokeStyle = `rgba(102, 126, 234, ${
+                0.2 * (1 - distance / 100)
+              })`;
+              ctx.lineWidth = 0.5;
+              ctx.beginPath();
+              ctx.moveTo(a.x, a.y);
+              ctx.lineTo(b.x, b.y);
+              ctx.stroke();
+            }
+          });
+        });
+
+        requestAnimationFrame(animateParticles);
+      }
+
+      animateParticles();
+
+      window.addEventListener("resize", () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      });
+
+      function startQuestionnaire() {
+        document.getElementById("welcomeScreen").classList.add("hidden");
+        document.getElementById("progressContainer").classList.remove("hidden");
+        document.getElementById("questionCard").classList.remove("hidden");
+        loadQuestion();
+      }
+
+      function loadQuestion() {
+        const q = questions[currentQuestion];
+        document.getElementById("questionNumber").textContent = `QUESTION ${
+          currentQuestion + 1
+        }/6`;
+        document.getElementById("questionText").textContent = q.question;
+        document.getElementById("questionHint").textContent = q.hint;
+        document.getElementById("answerInput").placeholder = q.placeholder;
+
+        // Load saved answer if exists
+        const savedAnswer = answers[`q${q.id}`] || "";
+        document.getElementById("answerInput").value = savedAnswer;
+
+        // Update progress bar
+        const progress = (currentQuestion / questions.length) * 100;
+        document.getElementById("progressBar").style.width = progress + "%";
+
+        // Update buttons
+        document.getElementById("backBtn").disabled = currentQuestion === 0;
+        document.getElementById("backBtn").style.opacity =
+          currentQuestion === 0 ? "0.5" : "1";
+
+        checkAnswer();
+        document.getElementById("answerInput").focus();
+      }
+
+      function checkAnswer() {
+        const answer = document.getElementById("answerInput").value.trim();
+        document.getElementById("nextBtn").disabled = !answer;
+      }
+
+      function handleKeyPress(event) {
+        if (event.key === "Enter" && event.ctrlKey) {
+          if (document.getElementById("answerInput").value.trim()) {
+            nextQuestion();
+          }
+        }
+      }
+
+      function nextQuestion() {
+        const answer = document.getElementById("answerInput").value.trim();
+        if (!answer) return;
+
+        // Save answer
+        answers[`q${questions[currentQuestion].id}`] = answer;
+
+        if (currentQuestion < questions.length - 1) {
+          currentQuestion++;
+          loadQuestion();
+        } else {
+          submitAnswers();
+        }
+      }
+
+      function previousQuestion() {
+        if (currentQuestion > 0) {
+          const answer = document.getElementById("answerInput").value.trim();
+          if (answer) answers[`q${questions[currentQuestion].id}`] = answer;
+          currentQuestion--;
+          loadQuestion();
+        }
+      }
+
+      function submitAnswers() {
+        // Hide question card, show results
+        document.getElementById("questionCard").classList.add("hidden");
+        document.getElementById("resultsScreen").classList.remove("hidden");
+        document.getElementById("progressBar").style.width = "100%";
+
+        // Send answers to backend
+        fetch("/submit_answers", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(answers),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            // Redirect to results page or display results
+            window.location.href = "/results";
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("Something went wrong. Please try again.");
+          });
+      }
+    </script>
+  </body>
+</html>

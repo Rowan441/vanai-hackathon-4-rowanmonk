@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Music Survey Data Explorer</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/stats.css') }}"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>🎵 Music Survey Data Explorer 🎵</h1>
+        <p class="subtitle">Dive into the music preferences and AI opinions</p>
+      </header>
+
+      <div id="loading" class="loading">Loading survey data...</div>
+
+      <div id="content" style="display: none">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-number" id="totalResponses">0</div>
+            <div class="stat-label">Total Responses</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="uniqueArtists">0</div>
+            <div class="stat-label">Unique Artists</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="aiAcceptance">0%</div>
+            <div class="stat-label">Accept AI Music</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="avgAge">0</div>
+            <div class="stat-label">Average Age</div>
+          </div>
+        </div>
+
+        <div class="charts-section">
+          <div class="chart-card">
+            <div class="chart-title">Music Relationship</div>
+            <canvas id="relationshipChart"></canvas>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Discovery Methods</div>
+            <canvas id="discoveryChart"></canvas>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">AI Music Opinion</div>
+            <canvas id="aiChart"></canvas>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Dead Artists' Voice</div>
+            <canvas id="deadArtistsChart"></canvas>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Age Groups</div>
+            <canvas id="ageChart"></canvas>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Format Changes</div>
+            <canvas id="formatChart"></canvas>
+          </div>
+        </div>
+
+        <div class="filters">
+          <h2 style="color: #667eea; margin-bottom: 15px">Filter Responses</h2>
+          <div class="filter-group">
+            <select id="filterAge">
+              <option value="">All Age Groups</option>
+            </select>
+            <select id="filterGender">
+              <option value="">All Genders</option>
+            </select>
+            <select id="filterProvince">
+              <option value="">All Provinces</option>
+            </select>
+            <select id="filterAI">
+              <option value="">All AI Preferences</option>
+            </select>
+          </div>
+          <button onclick="applyFilters()" style="margin-top: 20px">
+            Apply Filters
+          </button>
+        </div>
+
+        <div class="responses-table">
+          <h2 style="color: #667eea; margin-bottom: 20px">Survey Responses</h2>
+          <table id="responsesTable">
+            <thead>
+              <tr>
+                <th>Age</th>
+                <th>Gender</th>
+                <th>Province</th>
+                <th>Music Relationship</th>
+                <th>Favorite Artist</th>
+                <th>AI Opinion</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody id="responsesBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="detailModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <div id="modalContent"></div>
+      </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/stats.js') }}"></script>
+  </body>
+</html>
