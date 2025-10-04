@@ -335,6 +335,298 @@ button {
   box-shadow: 0 12px 40px rgba(102, 126, 234, 0.7);
 }
 
+/* Match Result Styles */
+.match-result {
+  animation: fadeInUp 0.8s ease;
+}
+
+.match-header {
+  text-align: center;
+  margin-bottom: 40px;
+  position: relative;
+}
+
+.match-header h2 {
+  font-size: 2.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #f093fb 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 20px;
+  animation: pulse 2s ease infinite;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+.similarity-badge {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px 40px;
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(102, 126, 234, 0.5);
+  animation: glow 2s ease infinite;
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.5);
+  }
+  50% {
+    box-shadow: 0 8px 40px rgba(102, 126, 234, 0.8);
+  }
+}
+
+.similarity-score {
+  font-size: 3rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+}
+
+.similarity-label {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  letter-spacing: 3px;
+  margin-top: 5px;
+}
+
+/* Profile Grid */
+.profile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+  margin-bottom: 30px;
+}
+
+.profile-section h3 {
+  font-size: 1.3rem;
+  margin-bottom: 15px;
+  color: #667eea;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.info-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.info-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(102, 126, 234, 0.3);
+  transform: translateY(-2px);
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.info-item:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  color: #999;
+  font-size: 0.95rem;
+}
+
+.info-value {
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  text-align: right;
+}
+
+/* Quote Sections */
+.quote-section {
+  margin-bottom: 30px;
+}
+
+.quote-section h3 {
+  font-size: 1.3rem;
+  margin-bottom: 15px;
+  color: #667eea;
+}
+
+.quote-card {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+  border-left: 4px solid #667eea;
+  padding: 25px;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-style: italic;
+  line-height: 1.6;
+  color: #e0e0e0;
+  transition: all 0.3s ease;
+}
+
+.quote-card:hover {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15));
+  transform: translateX(5px);
+}
+
+/* AI Opinions */
+.ai-opinions {
+  margin-bottom: 30px;
+}
+
+.ai-opinions h3 {
+  font-size: 1.3rem;
+  margin-bottom: 15px;
+  color: #667eea;
+}
+
+.opinion-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.opinion-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.opinion-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(102, 126, 234, 0.3);
+  transform: scale(1.02);
+}
+
+.opinion-title {
+  font-size: 0.9rem;
+  color: #999;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.opinion-text {
+  font-size: 1.05rem;
+  color: #fff;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+/* Personal Section */
+.personal-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+  margin-bottom: 30px;
+}
+
+.personal-card {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08), rgba(118, 75, 162, 0.08));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 25px;
+  transition: all 0.3s ease;
+}
+
+.personal-card:hover {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.12), rgba(118, 75, 162, 0.12));
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+}
+
+.personal-card h3 {
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+  color: #667eea;
+}
+
+.theme-song,
+.favorite-lyric {
+  font-size: 1.1rem;
+  color: #e0e0e0;
+  line-height: 1.6;
+  font-style: italic;
+}
+
+/* Story Section */
+.story-section {
+  margin-bottom: 30px;
+}
+
+.story-section h3 {
+  font-size: 1.3rem;
+  margin-bottom: 15px;
+  color: #667eea;
+}
+
+.story-card {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+  border-left: 4px solid #764ba2;
+  padding: 25px;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #e0e0e0;
+  transition: all 0.3s ease;
+}
+
+.story-card:hover {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15));
+  transform: translateX(5px);
+}
+
+/* Restart Button */
+.restart-container {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.btn-restart {
+  padding: 18px 50px;
+  font-size: 1.1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  box-shadow: 0 8px 30px rgba(102, 126, 234, 0.5);
+  transition: all 0.3s ease;
+}
+
+.btn-restart:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(102, 126, 234, 0.7);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .header h1 {
@@ -348,5 +640,16 @@ button {
   }
   .button-container {
     flex-direction: column;
+  }
+  .profile-grid,
+  .opinion-grid,
+  .personal-section {
+    grid-template-columns: 1fr;
+  }
+  .match-header h2 {
+    font-size: 2rem;
+  }
+  .similarity-score {
+    font-size: 2.5rem;
   }
 }

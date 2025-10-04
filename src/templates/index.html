@@ -70,12 +70,121 @@
 
       <!-- Results Screen -->
       <div id="resultsScreen" class="question-card hidden">
-        <div class="results">
+        <div class="results" id="loadingState">
           <h2>Finding your perfect match...</h2>
           <div class="spinner"></div>
           <p style="color: #999; margin-top: 20px">
             Analyzing your musical DNA...
           </p>
+        </div>
+
+        <!-- Match Result (hidden initially) -->
+        <div class="match-result hidden" id="matchResult">
+          <div class="match-header">
+            <h2>🎉 WE FOUND YOUR SONIC TWIN!</h2>
+            <div class="similarity-badge">
+              <span class="similarity-score" id="similarityScore">95%</span>
+              <span class="similarity-label">MATCH</span>
+            </div>
+          </div>
+
+          <div class="profile-grid">
+            <!-- Left Column: Demographics -->
+            <div class="profile-section">
+              <h3>📊 Demographics</h3>
+              <div class="info-card">
+                <div class="info-item">
+                  <span class="info-label">Age</span>
+                  <span class="info-value" id="matchAge">-</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Gender</span>
+                  <span class="info-value" id="matchGender">-</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Location</span>
+                  <span class="info-value" id="matchProvince">-</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Column: Music Profile -->
+            <div class="profile-section">
+              <h3>🎵 Music DNA</h3>
+              <div class="info-card">
+                <div class="info-item">
+                  <span class="info-label">Genre</span>
+                  <span class="info-value" id="matchGenre">-</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Favorite Artist</span>
+                  <span class="info-value" id="matchFavBand">-</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">First Love</span>
+                  <span class="info-value" id="matchFirstArtist">-</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Music Relationship -->
+          <div class="quote-section">
+            <h3>💭 Their Relationship with Music</h3>
+            <div class="quote-card">
+              <p id="matchRelationship">-</p>
+            </div>
+          </div>
+
+          <!-- Current Vibe -->
+          <div class="quote-section">
+            <h3>🎧 Current Vibe</h3>
+            <div class="quote-card">
+              <p id="matchCurrentPref">-</p>
+            </div>
+          </div>
+
+          <!-- AI Opinions Grid -->
+          <div class="ai-opinions">
+            <h3>🤖 AI Music Opinions</h3>
+            <div class="opinion-grid">
+              <div class="opinion-card">
+                <div class="opinion-title">AI-Generated Music</div>
+                <div class="opinion-text" id="matchAiSongs">-</div>
+              </div>
+              <div class="opinion-card">
+                <div class="opinion-title">Dead Artists' Voices</div>
+                <div class="opinion-text" id="matchDeadArtists">-</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Personal Touches -->
+          <div class="personal-section">
+            <div class="personal-card">
+              <h3>🎤 Their Life's Theme Song</h3>
+              <div class="theme-song" id="matchThemeSong">-</div>
+            </div>
+            <div class="personal-card">
+              <h3>✨ Favorite Lyric</h3>
+              <div class="favorite-lyric" id="matchLyric">-</div>
+            </div>
+          </div>
+
+          <!-- Discovery Story -->
+          <div class="story-section">
+            <h3>🚀 How They Discovered Music</h3>
+            <div class="story-card">
+              <p id="matchDiscovery">-</p>
+            </div>
+          </div>
+
+          <!-- Restart Button -->
+          <div class="restart-container">
+            <button class="btn-restart" onclick="location.reload()">
+              FIND ANOTHER MATCH
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -293,13 +402,79 @@
         })
           .then((response) => response.json())
           .then((data) => {
-            // Redirect to results page or display results
-            window.location.href = "/results";
+            if (data.status === "success") {
+              displayMatch(data.match);
+            } else {
+              throw new Error(data.message || "Unknown error");
+            }
           })
           .catch((error) => {
             console.error("Error:", error);
-            alert("Something went wrong. Please try again.");
+            document.getElementById("loadingState").innerHTML = `
+              <h2 style="color: #ff6b6b;"> Oops! Something went wrong</h2>
+              <p style="color: #999; margin-top: 20px">${error.message}</p>
+              <button class="btn-restart" onclick="location.reload()" style="margin-top: 30px;">
+                TRY AGAIN
+              </button>
+            `;
           });
+      }
+
+      function displayMatch(match) {
+        // Hide loading, show results
+        setTimeout(() => {
+          document.getElementById("loadingState").classList.add("hidden");
+          document.getElementById("matchResult").classList.remove("hidden");
+
+          // Populate data
+          const profile = match.profile;
+
+          // Similarity score
+          const similarityPercent = Math.round(match.similarity_score * 100);
+          document.getElementById(
+            "similarityScore"
+          ).textContent = `${similarityPercent}%`;
+
+          // Demographics
+          document.getElementById("matchAge").textContent =
+            profile.age || "N/A";
+          document.getElementById("matchGender").textContent =
+            profile.gender || "N/A";
+          document.getElementById("matchProvince").textContent =
+            profile.province || "N/A";
+
+          // Music DNA
+          document.getElementById("matchGenre").textContent =
+            profile.genre || "N/A";
+          document.getElementById("matchFavBand").textContent =
+            profile.favorite_band || "N/A";
+          document.getElementById("matchFirstArtist").textContent =
+            profile.favorite_artist || "N/A";
+
+          // Quotes and text
+          document.getElementById("matchRelationship").textContent =
+            profile.relationship_with_music || "N/A";
+          document.getElementById("matchCurrentPref").textContent =
+            profile.current_preference || "N/A";
+          document.getElementById("matchDiscovery").textContent =
+            profile.discovering_music || "N/A";
+
+          // AI Opinions
+          document.getElementById("matchAiSongs").textContent =
+            profile.ai_songs || "N/A";
+          document.getElementById("matchDeadArtists").textContent =
+            profile.dead_artists_voice || "N/A";
+
+          // Personal
+          document.getElementById("matchThemeSong").textContent =
+            profile.theme_song || "N/A";
+          document.getElementById("matchLyric").textContent =
+            profile.favorite_lyric || "N/A";
+
+          // Animate in
+          document.getElementById("matchResult").style.animation =
+            "fadeInUp 0.8s ease";
+        }, 1500);
       }
     </script>
   </body>

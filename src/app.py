@@ -2,7 +2,18 @@ from flask import Flask, render_template, jsonify, request
 import json
 import csv
 import os
+import sys
+import numpy as np
 from collections import Counter
+from openai import OpenAI
+
+# Add scripts to path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'scripts'))
+from helpers.identity_string_utils import create_user_identity_string
+from models import RespondentProfile, MatchResult, QuestionnaireResponse
+
+# Initialize OpenAI client
+client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
 # Base directory configuration
 BASE_DIR = os.path.dirname(__file__)
@@ -34,16 +45,87 @@ def stats():
     """Dashboard page"""
     return render_template('stats.html')
 
+def cosine_similarity(vec1, vec2):
+    """Calculate cosine similarity between two vectors"""
+    vec1 = np.array(vec1)
+    vec2 = np.array(vec2)
+    return np.dot(vec1, vec2) / (np.linalg.norm(vec1) * np.linalg.norm(vec2))
+
 @app.route("/submit_answers", methods=["POST"])
 def submit_answers():
     try:
         data = request.get_json()
-
         print("Received answers:", data)
 
-        return jsonify({"status": "success", "message": "Answers received!"}), 200
+        # Create identity string from user answers
+        identity_string = create_user_identity_string(data)
+        print("User identity string:", identity_string)
+
+        # Generate user embedding
+        response = client.embeddings.create(
+            input=identity_string,
+            model="text-embedding-3-small"
+        )
+        user_embedding = response.data[0].embedding
+
+        # Load pre-computed survey embeddings
+        embeddings_data = load_embeddings()
+
+        if not embeddings_data:
+            return jsonify({"status": "error", "message": "No embeddings found"}), 500
+
+        # Find best match with cosine similarity
+        best_match = None
+        best_similarity = -1
+
+        for entry in embeddings_data:
+            similarity = cosine_similarity(user_embedding, entry['embedding'])
+            if similarity > best_similarity:
+                # print(entry["participant_id"])
+                # print(similarity)
+                best_similarity = similarity
+                best_match = entry['participant_id']
+
+        print(f"Best match: {best_match} with similarity: {best_similarity}")
+
+        # Load full survey data to get matched response details
+        survey_data = load_survey_data()
+        matched_response = next((row for row in survey_data if row['participant_id'] == best_match), None)
+
+        if not matched_response:
+            return jsonify({"status": "error", "message": "Match not found in survey data"}), 500
+
+        profile = RespondentProfile(
+            age=matched_response.get('Age', 'N/A'),
+            gender=matched_response.get('Gender', 'N/A'),
+            province=matched_response.get('Province', 'N/A'),
+            relationship_with_music=matched_response.get('Q1_Relationship_with_music', 'N/A'),
+            discovering_music=matched_response.get('Q2_Discovering_music', 'N/A'),
+            favorite_artist=matched_response.get('Q3_artist_that_pulled_you_in', 'N/A'),
+            current_preference=matched_response.get('Q9_Music_preference_these_days', 'N/A'),
+            ai_songs=matched_response.get('Q10_Songs_by_AI', 'N/A'),
+            dead_artists_voice=matched_response.get('Q11_Use_of_dead_artists_voice_feelings', 'N/A'),
+            theme_song=matched_response.get('Q18_Life_theme_song', 'N/A'),
+            favorite_lyric=matched_response.get('Q19_Lyric_that_stuck_with_you', 'N/A'),
+            genre=matched_response.get('extracted_genre', 'N/A'),
+            favorite_band=matched_response.get('extracted_favourite_band', 'N/A')
+        )
+
+        match = MatchResult(
+            participant_id=best_match,
+            similarity_score=float(best_similarity),
+            profile=profile
+        )
+
+        response = QuestionnaireResponse(
+            status="success",
+            match=match
+        )
+
+        return jsonify(response.model_dump()), 200
 
     except Exception as e:
+        print(f"Error: {str(e)}")
         return jsonify({"status": "error", "message": str(e)}), 400
 
 @app.route('/api/stats')
