@@ -653,6 +653,119 @@ button {
   box-shadow: 0 12px 40px rgba(102, 126, 234, 0.7);
 }
 
+/* Insights Section */
+.insights-section {
+  margin-bottom: 40px;
+}
+
+.insights-section h3 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: #667eea;
+  text-align: center;
+}
+
+.match-summary {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+  border: 2px solid rgba(102, 126, 234, 0.3);
+  border-radius: 15px;
+  padding: 20px 25px;
+  margin-bottom: 25px;
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: #e0e0e0;
+  text-align: center;
+  animation: fadeIn 0.8s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.insights-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.insight-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15));
+  border-left: 4px solid #667eea;
+  padding: 20px;
+  border-radius: 12px;
+  animation: slideInLeft 0.5s ease forwards;
+  opacity: 0;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.insight-number {
+  min-width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.insight-content {
+  flex: 1;
+}
+
+.insight-field {
+  font-size: 0.9rem;
+  color: #667eea;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.insight-text {
+  font-size: 1.05rem;
+  color: #e0e0e0;
+  line-height: 1.6;
+}
+
+/* Highlighted Field */
+.highlighted-field {
+  position: relative;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+  border-left: 4px solid #f093fb !important;
+  animation: glow-pulse 2s ease infinite;
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(240, 147, 251, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(240, 147, 251, 0.6);
+  }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .header h1 {

@@ -55,7 +55,6 @@ def cosine_similarity(vec1, vec2):
 def submit_answers():
     try:
         data = request.get_json()
-        print("Received answers:", data)
 
         # Create identity string from user answers
         identity_string = create_user_identity_string(data)
@@ -95,19 +94,67 @@ def submit_answers():
         if not matched_response:
             return jsonify({"status": "error", "message": "Match not found in survey data"}), 500
 
+        # Build discovery methods string
+        discovery_methods = []
+        if matched_response.get('Q7_New_music_discover_1'): discovery_methods.append("TikTok/Reels")
+        if matched_response.get('Q7_New_music_discover_2'): discovery_methods.append("Streaming playlists")
+        if matched_response.get('Q7_New_music_discover_3'): discovery_methods.append("Friend recommendations")
+        if matched_response.get('Q7_New_music_discover_4'): discovery_methods.append("Movie/TV soundtracks")
+        if matched_response.get('Q7_New_music_discover_5'): discovery_methods.append("Shazam")
+        if matched_response.get('Q7_New_music_discover_6'): discovery_methods.append("Music blogs / critics")
+        if matched_response.get('Q7_New_music_discover_7'): discovery_methods.append("Just replays their favourites")
+
+        # Build listening contexts
+        listening_contexts = []
+        if matched_response.get('Q8_Music_listen_time_GRID_1') in ['Often', 'Always']: listening_contexts.append("Waking up")
+        if matched_response.get('Q8_Music_listen_time_GRID_2') in ['Often', 'Always']: listening_contexts.append("Commuting")
+        if matched_response.get('Q8_Music_listen_time_GRID_3') in ['Often', 'Always']: listening_contexts.append("Working out")
+        if matched_response.get('Q8_Music_listen_time_GRID_4') in ['Often', 'Always']: listening_contexts.append("Cooking")
+        if matched_response.get('Q8_Music_listen_time_GRID_5') in ['Often', 'Always']: listening_contexts.append("Cleaning")
+        if matched_response.get('Q8_Music_listen_time_GRID_6') in ['Often', 'Always']: listening_contexts.append("Unwinding")
+
+        # Build music acheivements
+        acheivements = []
+        if matched_response.get('Q12_Music_bingo_1'): acheivements.append("Made a breakup playlists")
+        if matched_response.get('Q12_Music_bingo_2'): acheivements.append("Played DJ on road trip")
+        if matched_response.get('Q12_Music_bingo_3'): acheivements.append("Used music to hype themselves up")
+        if matched_response.get('Q12_Music_bingo_4'): acheivements.append("Cried to a sad song")
+        if matched_response.get('Q12_Music_bingo_5'): acheivements.append("Shared a song to flirt")
+        if matched_response.get('Q12_Music_bingo_6'): acheivements.append("Made a playlist just for the vibes")
+        if matched_response.get('Q12_Music_bingo_7'): acheivements.append("Replayed the same song 10+ times")
+
+        # Build sharing methods
+        sharing_methods = []
+        if matched_response.get('Q13_Share_the_music_you_love_1'): sharing_methods.append("Texts links")
+        if matched_response.get('Q13_Share_the_music_you_love_2'): sharing_methods.append("Group chats")
+        if matched_response.get('Q13_Share_the_music_you_love_3'): sharing_methods.append("Social media")
+        if matched_response.get('Q13_Share_the_music_you_love_4'): sharing_methods.append("Shares playlists")
+        if matched_response.get('Q13_Share_the_music_you_love_5'): sharing_methods.append("In-person")
+        if matched_response.get('Q13_Share_the_music_you_love_6'): sharing_methods.append("Doesn't share music")
+
         profile = RespondentProfile(
             age=matched_response.get('Age', 'N/A'),
             gender=matched_response.get('Gender', 'N/A'),
             province=matched_response.get('Province', 'N/A'),
             relationship_with_music=matched_response.get('Q1_Relationship_with_music', 'N/A'),
             discovering_music=matched_response.get('Q2_Discovering_music', 'N/A'),
-            favorite_artist=matched_response.get('Q3_artist_that_pulled_you_in', 'N/A'),
+            first_song_artist_love=matched_response.get('Q3_artist_that_pulled_you_in', 'N/A'),
+            format_change=matched_response.get('Q4_Music_format_changes', 'N/A'),
+            format_change_memory=matched_response.get('Q5_Music_format_change_impact', 'N/A'),
+            format_change_feelings=matched_response.get('Q6_Music_format_change_feelings', 'N/A'),
+            discovery_methods=', '.join(discovery_methods) if discovery_methods else 'N/A',
+            listening_contexts=', '.join(listening_contexts) if listening_contexts else 'N/A',
             current_preference=matched_response.get('Q9_Music_preference_these_days', 'N/A'),
             ai_songs=matched_response.get('Q10_Songs_by_AI', 'N/A'),
             dead_artists_voice=matched_response.get('Q11_Use_of_dead_artists_voice_feelings', 'N/A'),
+            music_acheivements=', '.join(acheivements) if acheivements else 'N/A',
+            sharing_methods=', '.join(sharing_methods) if sharing_methods else 'N/A',
+            friend_shares_reaction=matched_response.get('Q14_Friend_shares_a_song', 'N/A'),
+            guilty_pleasure_attitude=matched_response.get('Q15_Music_guilty_pleasure', 'N/A'),
+            guilty_pleasure_song=matched_response.get('Q16_Music_guilty_pleasure_text_OE', 'N/A'),
             theme_song=matched_response.get('Q18_Life_theme_song', 'N/A'),
             favorite_lyric=matched_response.get('Q19_Lyric_that_stuck_with_you', 'N/A'),
-            genre=matched_response.get('extracted_genre', 'N/A'),
+            favorite_genre=matched_response.get('extracted_genre', 'N/A'),
             favorite_band=matched_response.get('extracted_favourite_band', 'N/A')
         )
 
@@ -127,6 +174,94 @@ def submit_answers():
     except Exception as e:
         print(f"Error: {str(e)}")
         return jsonify({"status": "error", "message": str(e)}), 400
+
+@app.route("/analyze_match", methods=["POST"])
+def analyze_match():
+    """Analyze which fields are most similar between user and match"""
+    try:
+        data = request.get_json()
+        user_answers = data.get('user_answers', {})
+        match_profile = data.get('match_profile', {})
+
+        # Create JSON objects for comparison
+        user_profile_json = {
+            "What's your relationship with music like?": user_answers.get(1, 'N/A'),
+            "How did you first discover music you loved?": user_answers.get(2, 'N/A'),
+            "What kind of music are you into these days?": user_answers.get(3, 'N/A'),
+            "Real talk - how do you feel about AI making music": user_answers.get(4, 'N/A'),
+            "What about AI using dead artists' voices to make new songs?": user_answers.get(5, 'N/A'),
+            "Do you share music with people, or keep it to yourself?": user_answers.get(6, 'N/A')
+        }
+
+        import json as json_lib
+        user_json_str = json_lib.dumps(user_profile_json, indent=2)
+        match_json_str = json_lib.dumps(match_profile, indent=2)
+
+        # Create comparison prompt
+        prompt = f"""Analyze the similarities between a user's music taste quiz answers and their matched survey respondent.
+
+USER'S ANSWERS:
+{user_json_str}
+
+MATCHED PERSON'S FULL PROFILE:
+{match_json_str}
+
+Identify the TOP 0 to 3 most interesting similarities between them. Focus on:
+- Shared attitudes or philosophies about music
+- Similar emotional connections or behaviors
+- Aligned opinions on controversial topics (like AI music)
+- Common discovery patterns or influences
+
+If there are no similarities between them, return an empty list.
+
+Format your response as a JSON object:
+{{
+  "summary": "2-3 sentence summary of the overall match and why these two are musically aligned. Write directly to the user using 'you'.",
+  "insights": [
+    {{"field": "MATCHED PERSON field name", "insight": "1 sentence explanation of the similarity"}},
+    {{"field": "MATCHED PERSON field name", "insight": "1 sentence explanation of the similarity"}},
+    {{"field": "MATCHED PERSON field name", "insight": "1 sentence explanation of the similarity"}}
+  ]
+}}
+
+Be engaging, conversational, and highlight what makes this match special.
+Write the explanation using "you" instead of "they". Talk directly to the user."""
+
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": "You are a music taste analyst who finds meaningful connections for people. Respond only with valid JSON."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.7,
+            max_tokens=400
+        )
+
+        result_text = response.choices[0].message.content.strip()
+
+        # Remove markdown code blocks if present
+        if result_text.startswith('```'):
+            result_text = result_text.split('```')[1]
+            if result_text.startswith('json'):
+                result_text = result_text[4:]
+            result_text = result_text.strip()
+
+        import json as json_lib
+        analysis_result = json_lib.loads(result_text)
+
+        return jsonify({
+            "status": "success",
+            "summary": analysis_result.get("summary", ""),
+            "insights": analysis_result.get("insights", [])
+        }), 200
+
+    except Exception as e:
+        print(f"Error analyzing match: {str(e)}")
+        return jsonify({
+            "status": "error",
+            "message": str(e)
+        }), 400
+
 
 @app.route('/api/stats')
 def get_stats():

@@ -403,7 +403,19 @@
           .then((response) => response.json())
           .then((data) => {
             if (data.status === "success") {
-              displayMatch(data.match);
+              // Analyze match insights with AI
+              return fetch("/analyze_match", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  user_answers: answers,
+                  match_profile: data.match.profile
+                }),
+              }).then(res => res.json()).then(analysisData => {
+                displayMatch(data.match, analysisData.insights || [], analysisData.summary || "");
+              });
             } else {
               throw new Error(data.message || "Unknown error");
             }
@@ -420,7 +432,7 @@
           });
       }
 
-      function displayMatch(match) {
+      function displayMatch(match, insights = [], summary = "") {
         // Hide loading, show results
         setTimeout(() => {
           document.getElementById("loadingState").classList.add("hidden");
@@ -436,6 +448,27 @@
           ).textContent = `${similarityPercent}%`;
 
           console.log(profile)
+
+          // Field mapping for highlighting
+          const fieldMap = {
+            'music relationship': 'matchRelationship',
+            'discovering music': 'matchDiscovery',
+            'current preference': 'matchCurrentPref',
+            'ai-generated music': 'matchAiSongs',
+            'ai music': 'matchAiSongs',
+            'dead artists': 'matchDeadArtists',
+          };
+
+          // Highlight fields mentioned in insights
+          const highlightedFields = new Set();
+          insights.forEach(insight => {
+            const fieldLower = insight.field.toLowerCase();
+            for (const [key, elementId] of Object.entries(fieldMap)) {
+              if (fieldLower.includes(key)) {
+                highlightedFields.add(elementId);
+              }
+            }
+          });
 
           // Demographics
           document.getElementById("matchAge").textContent =
@@ -453,19 +486,14 @@
           document.getElementById("matchFirstArtist").textContent =
             profile.favorite_artist || "N/A";
 
-          // Quotes and text
-          document.getElementById("matchRelationship").textContent =
-            profile.relationship_with_music || "N/A";
-          document.getElementById("matchCurrentPref").textContent =
-            profile.current_preference || "N/A";
-          document.getElementById("matchDiscovery").textContent =
-            profile.discovering_music || "N/A";
+          // Quotes and text (with highlighting)
+          setFieldWithHighlight("matchRelationship", profile.relationship_with_music, highlightedFields);
+          setFieldWithHighlight("matchCurrentPref", profile.current_preference, highlightedFields);
+          setFieldWithHighlight("matchDiscovery", profile.discovering_music, highlightedFields);
 
-          // AI Opinions
-          document.getElementById("matchAiSongs").textContent =
-            profile.ai_songs || "N/A";
-          document.getElementById("matchDeadArtists").textContent =
-            profile.dead_artists_voice || "N/A";
+          // AI Opinions (with highlighting)
+          setFieldWithHighlight("matchAiSongs", profile.ai_songs, highlightedFields);
+          setFieldWithHighlight("matchDeadArtists", profile.dead_artists_voice, highlightedFields);
 
           // Personal
           document.getElementById("matchThemeSong").textContent =
@@ -473,10 +501,51 @@
           document.getElementById("matchLyric").textContent =
             profile.favorite_lyric || "N/A";
 
+          // Display insights at the top
+          if (insights.length > 0 || summary) {
+            const summaryHTML = summary ? `
+              <div class="match-summary">
+                ${summary}
+              </div>
+            ` : '';
+
+            const insightsHTML = insights.map((insight, idx) => `
+              <div class="insight-card" style="animation-delay: ${idx * 0.1}s">
+                <div class="insight-number">${idx + 1}</div>
+                <div class="insight-content">
+                  <div class="insight-field">${insight.field}</div>
+                  <div class="insight-text">${insight.insight}</div>
+                </div>
+              </div>
+            `).join('');
+
+            const insightsSection = document.createElement('div');
+            insightsSection.className = 'insights-section';
+            insightsSection.innerHTML = `
+              <h3>✨ Why You Match</h3>
+              ${summaryHTML}
+              <div class="insights-container">
+                ${insightsHTML}
+              </div>
+            `;
+
+            const matchResult = document.getElementById('matchResult');
+            matchResult.insertBefore(insightsSection, matchResult.children[1]);
+          }
+
           // Animate in
           document.getElementById("matchResult").style.animation =
             "fadeInUp 0.8s ease";
         }, 1500);
+      }
+
+      function setFieldWithHighlight(elementId, text, highlightedFields) {
+        const element = document.getElementById(elementId);
+        element.textContent = text || "N/A";
+
+        if (highlightedFields.has(elementId)) {
+          element.parentElement.classList.add('highlighted-field');
+        }
       }
     </script>
   </body>
