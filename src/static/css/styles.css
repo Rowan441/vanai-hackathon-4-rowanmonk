@@ -100,7 +100,7 @@ body {
   overflow: hidden;
 }
 
-.question-card::before {
+.purple-hover::before {
   content: "";
   position: absolute;
   top: -2px;
@@ -368,7 +368,8 @@ button {
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {
@@ -388,7 +389,8 @@ button {
 }
 
 @keyframes glow {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 8px 30px rgba(102, 126, 234, 0.5);
   }
   50% {
@@ -476,7 +478,11 @@ button {
 }
 
 .quote-card {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+  background: linear-gradient(
+    135deg,
+    rgba(102, 126, 234, 0.1),
+    rgba(118, 75, 162, 0.1)
+  );
   border-left: 4px solid #667eea;
   padding: 25px;
   border-radius: 12px;
@@ -488,7 +494,11 @@ button {
 }
 
 .quote-card:hover {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15));
+  background: linear-gradient(
+    135deg,
+    rgba(102, 126, 234, 0.15),
+    rgba(118, 75, 162, 0.15)
+  );
   transform: translateX(5px);
 }
 
@@ -547,7 +557,11 @@ button {
 }
 
 .personal-card {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08), rgba(118, 75, 162, 0.08));
+  background: linear-gradient(
+    135deg,
+    rgba(102, 126, 234, 0.08),
+    rgba(118, 75, 162, 0.08)
+  );
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 15px;
   padding: 25px;
@@ -555,7 +569,11 @@ button {
 }
 
 .personal-card:hover {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.12), rgba(118, 75, 162, 0.12));
+  background: linear-gradient(
+    135deg,
+    rgba(102, 126, 234, 0.12),
+    rgba(118, 75, 162, 0.12)
+  );
   transform: translateY(-3px);
   box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
 }
@@ -586,7 +604,11 @@ button {
 }
 
 .story-card {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+  background: linear-gradient(
+    135deg,
+    rgba(102, 126, 234, 0.1),
+    rgba(118, 75, 162, 0.1)
+  );
   border-left: 4px solid #764ba2;
   padding: 25px;
   border-radius: 12px;
@@ -597,7 +619,11 @@ button {
 }
 
 .story-card:hover {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15));
+  background: linear-gradient(
+    135deg,
+    rgba(102, 126, 234, 0.15),
+    rgba(118, 75, 162, 0.15)
+  );
   transform: translateX(5px);
 }
 

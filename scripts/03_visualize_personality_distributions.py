@@ -21,7 +21,7 @@ def calculate_all_scores(sample_size=None):
     """Calculate personality scores for all survey respondents"""
 
     # Load the processed survey data
-    input_csv = os.path.join(BASE_DIR, "../data/processed/music_survey_with_genres.csv")
+    input_csv = os.path.join(BASE_DIR, "../data/processed/02_music_survey_with_genres.csv")
 
     print(f"Loading data from {input_csv}...")
     df = pd.read_csv(input_csv)

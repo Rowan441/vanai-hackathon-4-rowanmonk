@@ -4,6 +4,7 @@ import json
 import numpy as np
 import pandas as pd
 from openai import OpenAI
+from tqdm import tqdm
 import sys
 
 # Base directory configuration
@@ -24,7 +25,7 @@ def get_embedding(text):
 
 def generate_survey_embeddings():
     """Generate embeddings for all survey rows and save to disk"""
-    survey_file = os.path.join(BASE_DIR, "../data/processed/music_survey_with_genres.csv")
+    survey_file = os.path.join(BASE_DIR, "../data/processed/02_music_survey_with_genres.csv")
     output_file = os.path.join(BASE_DIR, "../data/processed/survey_embeddings.json")
 
     print("Loading survey data...")
@@ -36,10 +37,7 @@ def generate_survey_embeddings():
 
     embeddings_data = []
 
-    for i, row in enumerate(rows):
-        if (i + 1) % 100 == 0:
-            print(f"Processing row {i+1}/{len(rows)}...")
-
+    for row in tqdm(rows, desc="Generating embeddings"):
         # Convert dict row to pandas Series for the function
         row_series = pd.Series(row)
         survey_text = create_survey_identity_string(row_series)

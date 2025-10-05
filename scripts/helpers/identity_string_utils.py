@@ -110,21 +110,21 @@ def create_user_identity_string(answers):
     parts = []
 
     # Q1: Music relationship
-    parts.append(f"Music relationship: {answers.get("q1", '')}")
+    parts.append(f"Music relationship: {answers.get('q1', '')}")
 
     # Q2: Discovery background
-    parts.append(f"First discovered music through: {answers.get("q2", '')}")
+    parts.append(f"First discovered music through: {answers.get('q2', '')}")
 
     # Q3: Current music preference
-    parts.append(f"Current music preference: {answers.get("q3", '')}")
+    parts.append(f"Current music preference: {answers.get('q3', '')}")
 
     # Q4: AI-generated music view
-    parts.append(f"View on AI-generated music: {answers.get("q4", '')}")
+    parts.append(f"View on AI-generated music: {answers.get('q4', '')}")
 
     # Q5: AI using dead artists' voices
-    parts.append(f"View on AI using dead artists' voices: {answers.get("q5", '')}")
+    parts.append(f"View on AI using dead artists' voices: {answers.get('q5', '')}")
 
     # Q6: Sharing behavior
-    parts.append(f"Shares music by: {answers.get("q6", '')}")
+    parts.append(f"Shares music by: {answers.get('q6', '')}")
 
     return "\n".join(parts)

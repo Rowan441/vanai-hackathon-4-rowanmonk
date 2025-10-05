@@ -182,8 +182,8 @@ def process_survey_data(csv_path: str, output_path: str, sample_size: Optional[i
 
 if __name__ == "__main__":
     # File paths
-    input_csv = os.path.join(BASE_DIR, "../data/raw/music_survey_data.csv")
-    output_csv = os.path.join(BASE_DIR, "../data/processed/music_survey_with_genres.csv")
+    input_csv = os.path.join(BASE_DIR, "../data/processed/01_music_survey_high_effort.csv")
+    output_csv = os.path.join(BASE_DIR, "../data/processed/02_music_survey_with_genres.csv")
 
     # Test with a small sample first (remove or set to None to process all)
     SAMPLE_SIZE = None

@@ -21,7 +21,7 @@
 
       <!-- Welcome Screen -->
       <div id="welcomeScreen" class="welcome-screen">
-        <div class="question-card">
+        <div class="question-card purple-hover">
           <h2>Ready to find your music taste twin?</h2>
           <p>
             Answer 6 quick questions and we'll match you with someone who shares
@@ -39,7 +39,7 @@
       </div>
 
       <!-- Question Card -->
-      <div id="questionCard" class="question-card hidden">
+      <div id="questionCard" class="question-card purple-hover hidden">
         <div class="question-number" id="questionNumber">QUESTION 1/6</div>
         <div class="question-text" id="questionText"></div>
         <div class="question-hint" id="questionHint"></div>
@@ -434,6 +434,8 @@
           document.getElementById(
             "similarityScore"
           ).textContent = `${similarityPercent}%`;
+
+          console.log(profile)
 
           // Demographics
           document.getElementById("matchAge").textContent =

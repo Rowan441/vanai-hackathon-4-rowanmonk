@@ -22,7 +22,7 @@ app = Flask(__name__)
 
 def load_survey_data():
     """Load survey data from CSV"""
-    survey_file = os.path.join(BASE_DIR, "../data/processed/music_survey_with_genres.csv")
+    survey_file = os.path.join(BASE_DIR, "../data/processed/02_music_survey_with_genres.csv")
     with open(survey_file, 'r', encoding='utf-8') as f:
         reader = csv.DictReader(f)
         return list(reader)

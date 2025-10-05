@@ -19,7 +19,7 @@ def generate_prompts_for_respondents(n=5):
     """
 
     # Load the processed survey data with genres
-    input_csv = os.path.join(BASE_DIR, "../data/processed/music_survey_with_genres.csv")
+    input_csv = os.path.join(BASE_DIR, "../data/processed/02_music_survey_with_genres.csv")
     output_dir = os.path.join(BASE_DIR, "../data/analysis")
     output_csv = os.path.join(output_dir, "image_prompts.csv")
     output_json = os.path.join(output_dir, "image_prompts.json")
