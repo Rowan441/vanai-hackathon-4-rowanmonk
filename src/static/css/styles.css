@@ -825,6 +825,28 @@ button {
   }
 }
 
+/* Responsive: inline margin notes for narrow screens */
+@media (max-width: 1349px) {
+  .margin-note {
+    position: relative;
+    right: auto;
+    left: auto;
+    top: auto;
+    width: 100%;
+    margin-top: 15px;
+    animation: fadeInUp 0.5s ease forwards;
+  }
+
+  .margin-note::before {
+    display: none;
+  }
+
+  .margin-note-left {
+    left: auto;
+    animation: fadeInUp 0.5s ease forwards;
+  }
+}
+
 @keyframes slideInFromRight {
   from {
     opacity: 0;
