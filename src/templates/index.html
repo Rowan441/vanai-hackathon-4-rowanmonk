@@ -486,8 +486,6 @@
       function displayMatch(match, insights = [], summary = "") {
         // Hide loading, show results
         setTimeout(() => {
-          console.log(match);
-          console.log(insights);
           document.getElementById("loadingState").classList.add("hidden");
           document.getElementById("matchResult").classList.remove("hidden");
 
@@ -500,7 +498,6 @@
             "similarityScore"
           ).textContent = `${similarityPercent}%`;
 
-          console.log(profile);
 
           // Field mapping for highlighting
           const fieldMap = {
@@ -701,7 +698,6 @@
               if (targetElementId) {
                 const targetElement = document.getElementById(targetElementId);
                 if (targetElement) {
-                  console.log(targetElement);
                   // Create margin note
                   const marginNote = document.createElement("div");
                   marginNote.className = "margin-note";
