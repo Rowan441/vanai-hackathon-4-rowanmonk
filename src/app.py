@@ -135,7 +135,7 @@ def submit_answers():
         profile = RespondentProfile(
             age=matched_response.get('Age', 'N/A'),
             gender=matched_response.get('Gender', 'N/A'),
-            province=matched_response.get('Province', 'N/A'),
+            location=", ".join(filter(None, [matched_response.get('CMA'), matched_response.get('Province')])) or "N/A",
             relationship_with_music=matched_response.get('Q1_Relationship_with_music', 'N/A'),
             discovering_music=matched_response.get('Q2_Discovering_music', 'N/A'),
             first_song_artist_love=matched_response.get('Q3_artist_that_pulled_you_in', 'N/A'),
@@ -147,7 +147,7 @@ def submit_answers():
             current_preference=matched_response.get('Q9_Music_preference_these_days', 'N/A'),
             ai_songs=matched_response.get('Q10_Songs_by_AI', 'N/A'),
             dead_artists_voice=matched_response.get('Q11_Use_of_dead_artists_voice_feelings', 'N/A'),
-            music_acheivements=', '.join(acheivements) if acheivements else 'N/A',
+            music_achievements=', '.join(acheivements) if acheivements else 'N/A',
             sharing_methods=', '.join(sharing_methods) if sharing_methods else 'N/A',
             friend_shares_reaction=matched_response.get('Q14_Friend_shares_a_song', 'N/A'),
             guilty_pleasure_attitude=matched_response.get('Q15_Music_guilty_pleasure', 'N/A'),
@@ -185,12 +185,12 @@ def analyze_match():
 
         # Create JSON objects for comparison
         user_profile_json = {
-            "What's your relationship with music like?": user_answers.get(1, 'N/A'),
-            "How did you first discover music you loved?": user_answers.get(2, 'N/A'),
-            "What kind of music are you into these days?": user_answers.get(3, 'N/A'),
-            "Real talk - how do you feel about AI making music": user_answers.get(4, 'N/A'),
-            "What about AI using dead artists' voices to make new songs?": user_answers.get(5, 'N/A'),
-            "Do you share music with people, or keep it to yourself?": user_answers.get(6, 'N/A')
+            "What's your relationship with music like?": user_answers.get('q1', 'N/A'),
+            "How did you first discover music you loved?": user_answers.get('q2', 'N/A'),
+            "What kind of music are you into these days?": user_answers.get('q3', 'N/A'),
+            "Real talk - how do you feel about AI making music": user_answers.get('q4', 'N/A'),
+            "What about AI using dead artists' voices to make new songs?": user_answers.get('q5', 'N/A'),
+            "Do you share music with people, or keep it to yourself?": user_answers.get('q6', 'N/A')
         }
 
         import json as json_lib

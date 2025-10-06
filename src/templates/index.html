@@ -88,43 +88,33 @@
             </div>
           </div>
 
-          <div class="profile-grid">
+          <div class="list-sections">
             <!-- Left Column: Demographics -->
-            <div class="profile-section">
+            <div class="list-section">
               <h3>📊 Demographics</h3>
-              <div class="info-card">
-                <div class="info-item">
-                  <span class="info-label">Age</span>
-                  <span class="info-value" id="matchAge">-</span>
-                </div>
-                <div class="info-item">
-                  <span class="info-label">Gender</span>
-                  <span class="info-value" id="matchGender">-</span>
-                </div>
-                <div class="info-item">
-                  <span class="info-label">Location</span>
-                  <span class="info-value" id="matchProvince">-</span>
-                </div>
+              <div class="info-item">
+                <span class="info-label">Age</span>
+                <span class="info-value" id="matchAge">-</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Gender</span>
+                <span class="info-value" id="matchGender">-</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Location</span>
+                <span class="info-value" id="matchLocation">-</span>
               </div>
             </div>
 
             <!-- Right Column: Music Profile -->
-            <div class="profile-section">
+            <div class="list-section">
               <h3>🎵 Music DNA</h3>
-              <div class="info-card">
-                <div class="info-item">
-                  <span class="info-label">Genre</span>
-                  <span class="info-value" id="matchGenre">-</span>
-                </div>
-                <div class="info-item">
-                  <span class="info-label">Favorite Artist</span>
-                  <span class="info-value" id="matchFavBand">-</span>
-                </div>
-                <div class="info-item">
-                  <span class="info-label">First Love</span>
-                  <span class="info-value" id="matchFirstArtist">-</span>
-                </div>
-              </div>
+              <div class="info-label">Their genre</div>
+              <div class="single-value" id="matchGenre">-</div>
+              <div class="info-label">Favorite Artist</div>
+              <div class="single-value" id="matchFavBand">-</div>
+              <div class="info-label">First Loved Artist / Song:</div>
+              <div class="single-value" id="matchFirstArtist">-</div>
             </div>
           </div>
 
@@ -176,6 +166,59 @@
             <h3>🚀 How They Discovered Music</h3>
             <div class="story-card">
               <p id="matchDiscovery">-</p>
+            </div>
+          </div>
+
+          <!-- Music Journey -->
+          <div class="list-sections">
+            <div class="list-section">
+              <h3>🎶 Music Discovery</h3>
+              <div class="info-label">How They Find New Music</div>
+              <div class="tag-container" id="matchDiscoveryMethods">
+                <!-- Will be populated with tags -->
+              </div>
+            </div>
+
+            <div class="list-section">
+              <h3>🎧 Listening Contexts</h3>
+              <div class="info-label">When They Listen</div>
+              <div class="tag-container" id="matchListeningContexts">
+                <!-- Will be populated with tags -->
+              </div>
+            </div>
+
+            <div class="list-section">
+              <h3>📤 Music Sharing</h3>
+              <div class="info-label">How They Share</div>
+              <div class="tag-container" id="matchSharingMethods">
+                <!-- Will be populated with tags -->
+              </div>
+            </div>
+
+            <div class="list-section">
+              <h3>🎵 Friend Shares</h3>
+              <div class="info-label">When Friends Share Music</div>
+              <div class="single-value" id="matchFriendShares">-</div>
+            </div>
+          </div>
+
+          <!-- Achievements Section -->
+          <div class="achievements-section">
+            <h3>🏆 Music Achievements Unlocked</h3>
+            <div class="achievements-grid" id="achievementsGrid">
+              <!-- Achievements will be populated by JavaScript -->
+            </div>
+          </div>
+
+          <!-- Guilty Pleasure -->
+          <div
+            class="quote-section"
+            id="guiltyPleasureSection"
+            style="display: none"
+          >
+            <h3>😅 Guilty Pleasure</h3>
+            <div class="quote-card">
+              <p id="matchGuiltyPleasure">-</p>
             </div>
           </div>
 
@@ -411,11 +454,17 @@
                 },
                 body: JSON.stringify({
                   user_answers: answers,
-                  match_profile: data.match.profile
+                  match_profile: data.match.profile,
                 }),
-              }).then(res => res.json()).then(analysisData => {
-                displayMatch(data.match, analysisData.insights || [], analysisData.summary || "");
-              });
+              })
+                .then((res) => res.json())
+                .then((analysisData) => {
+                  displayMatch(
+                    data.match,
+                    analysisData.insights || [],
+                    analysisData.summary || ""
+                  );
+                });
             } else {
               throw new Error(data.message || "Unknown error");
             }
@@ -435,6 +484,8 @@
       function displayMatch(match, insights = [], summary = "") {
         // Hide loading, show results
         setTimeout(() => {
+          console.log(match);
+          console.log(insights);
           document.getElementById("loadingState").classList.add("hidden");
           document.getElementById("matchResult").classList.remove("hidden");
 
@@ -447,21 +498,42 @@
             "similarityScore"
           ).textContent = `${similarityPercent}%`;
 
-          console.log(profile)
+          console.log(profile);
 
           // Field mapping for highlighting
           const fieldMap = {
-            'music relationship': 'matchRelationship',
-            'discovering music': 'matchDiscovery',
-            'current preference': 'matchCurrentPref',
-            'ai-generated music': 'matchAiSongs',
-            'ai music': 'matchAiSongs',
-            'dead artists': 'matchDeadArtists',
+            relationship_with_music: "matchRelationship",
+            // "music relationship": "matchRelationship",
+            discovering_music: "matchDiscovery",
+            // "discovering music": "matchDiscovery",
+            current_preference: "matchCurrentPref",
+            // "current preference": "matchCurrentPref",
+            ai_songs: "matchAiSongs",
+            // "ai-generated music": "matchAiSongs",
+            // "ai music": "matchAiSongs",
+            dead_artists_voice: "matchDeadArtists",
+            // "dead artists": "matchDeadArtists",
+            discovery_methods: "matchDiscoveryMethods",
+            // "discovery methods": "matchDiscoveryMethods",
+            listening_contexts: "matchListeningContexts",
+            // "listening contexts": "matchListeningContexts",
+            music_achievements: "matchAchievements",
+            achievements: "matchAchievements",
+            sharing_methods: "matchSharingMethods",
+            sharing: "matchSharingMethods",
+            guilty_pleasure: "matchGuiltyPleasure",
+            favorite_band: "matchFavBand",
+            favorite_genre: "matchGenre",
+            favorite_lyric: "matchLyric",
+            first_song_artist_love: "matchFirstArtist",
+            friend_shares_reaction: "matchFriendShares",
+            guilty_pleasure_song: "matchGuiltyPleasure",
+            theme_song: "matchThemeSong",
           };
 
           // Highlight fields mentioned in insights
           const highlightedFields = new Set();
-          insights.forEach(insight => {
+          insights.forEach((insight) => {
             const fieldLower = insight.field.toLowerCase();
             for (const [key, elementId] of Object.entries(fieldMap)) {
               if (fieldLower.includes(key)) {
@@ -475,41 +547,142 @@
             profile.age || "N/A";
           document.getElementById("matchGender").textContent =
             profile.gender || "N/A";
-          document.getElementById("matchProvince").textContent =
-            profile.province || "N/A";
+          document.getElementById("matchLocation").textContent =
+            profile.location || "N/A";
 
-          // Music DNA
-          document.getElementById("matchGenre").textContent =
-            profile.genre || "N/A";
-          document.getElementById("matchFavBand").textContent =
-            profile.favorite_band || "N/A";
-          document.getElementById("matchFirstArtist").textContent =
-            profile.favorite_artist || "N/A";
+          // Music DNA (with highlighting)
+          // setFieldWithHighlight(
+          //   "matchGenre",
+          //   profile.favorite_genre,
+          //   highlightedFields
+          // );
+          // setFieldWithHighlight(
+          //   "matchFavBand",
+          //   profile.favorite_band,
+          //   highlightedFields
+          // );
+          // setFieldWithHighlight(
+          //   "matchFirstArtist",
+          //   profile.first_song_artist_love,
+          //   highlightedFields
+          // );
+
+          // Friend shares (single value with highlighting)
+          const favorite_genreEl = document.getElementById("matchGenre");
+          favorite_genreEl.textContent = profile.favorite_genre || "N/A";
+          if (highlightedFields.has("matchGenre")) {
+            favorite_genreEl.classList.add("highlighted-single-value");
+          }
+          // Friend shares (single value with highlighting)
+          const favorite_bandEl = document.getElementById("matchFavBand");
+          favorite_bandEl.textContent = profile.favorite_band || "N/A";
+          if (highlightedFields.has("matchFavBand")) {
+            favorite_bandEl.classList.add("highlighted-single-value");
+          }
+          // Friend shares (single value with highlighting)
+          const first_song_artist_loveEl =
+            document.getElementById("matchFirstArtist");
+          first_song_artist_loveEl.textContent =
+            profile.first_song_artist_love || "N/A";
+          if (highlightedFields.has("matchFirstArtist")) {
+            first_song_artist_loveEl.classList.add("highlighted-single-value");
+          }
 
           // Quotes and text (with highlighting)
-          setFieldWithHighlight("matchRelationship", profile.relationship_with_music, highlightedFields);
-          setFieldWithHighlight("matchCurrentPref", profile.current_preference, highlightedFields);
-          setFieldWithHighlight("matchDiscovery", profile.discovering_music, highlightedFields);
+          setFieldWithHighlight(
+            "matchRelationship",
+            profile.relationship_with_music,
+            highlightedFields
+          );
+          setFieldWithHighlight(
+            "matchCurrentPref",
+            profile.current_preference,
+            highlightedFields
+          );
+          setFieldWithHighlight(
+            "matchDiscovery",
+            profile.discovering_music,
+            highlightedFields
+          );
 
           // AI Opinions (with highlighting)
-          setFieldWithHighlight("matchAiSongs", profile.ai_songs, highlightedFields);
-          setFieldWithHighlight("matchDeadArtists", profile.dead_artists_voice, highlightedFields);
+          setFieldWithHighlight(
+            "matchAiSongs",
+            profile.ai_songs,
+            highlightedFields
+          );
+          setFieldWithHighlight(
+            "matchDeadArtists",
+            profile.dead_artists_voice,
+            highlightedFields
+          );
 
-          // Personal
-          document.getElementById("matchThemeSong").textContent =
-            profile.theme_song || "N/A";
-          document.getElementById("matchLyric").textContent =
-            profile.favorite_lyric || "N/A";
+          // Personal (with highlighting)
+          setFieldWithHighlight(
+            "matchThemeSong",
+            profile.theme_song,
+            highlightedFields
+          );
+          setFieldWithHighlight(
+            "matchLyric",
+            profile.favorite_lyric,
+            highlightedFields
+          );
+
+          // Music Journey fields (with highlighting) - display as tags
+          displayTags(
+            "matchDiscoveryMethods",
+            profile.discovery_methods,
+            highlightedFields
+          );
+          displayTags(
+            "matchListeningContexts",
+            profile.listening_contexts,
+            highlightedFields
+          );
+          displayTags(
+            "matchSharingMethods",
+            profile.sharing_methods,
+            highlightedFields
+          );
+
+          // Friend shares (single value with highlighting)
+          const friendSharesEl = document.getElementById("matchFriendShares");
+          friendSharesEl.textContent = profile.friend_shares_reaction || "N/A";
+          if (highlightedFields.has("matchFriendShares")) {
+            friendSharesEl.classList.add("highlighted-single-value");
+          }
+
+          // Display achievements as video game style badges
+          displayAchievements(profile.music_achievements, highlightedFields);
+
+          // Guilty Pleasure (show only if present)
+          if (
+            profile.guilty_pleasure_song &&
+            profile.guilty_pleasure_song !== "N/A"
+          ) {
+            document.getElementById("guiltyPleasureSection").style.display =
+              "block";
+            setFieldWithHighlight(
+              "matchGuiltyPleasure",
+              profile.guilty_pleasure_song,
+              highlightedFields
+            );
+          }
 
           // Display insights at the top
           if (insights.length > 0 || summary) {
-            const summaryHTML = summary ? `
+            const summaryHTML = summary
+              ? `
               <div class="match-summary">
                 ${summary}
               </div>
-            ` : '';
+            `
+              : "";
 
-            const insightsHTML = insights.map((insight, idx) => `
+            const insightsHTML = insights
+              .map(
+                (insight, idx) => `
               <div class="insight-card" style="animation-delay: ${idx * 0.1}s">
                 <div class="insight-number">${idx + 1}</div>
                 <div class="insight-content">
@@ -517,10 +690,12 @@
                   <div class="insight-text">${insight.insight}</div>
                 </div>
               </div>
-            `).join('');
+            `
+              )
+              .join("");
 
-            const insightsSection = document.createElement('div');
-            insightsSection.className = 'insights-section';
+            const insightsSection = document.createElement("div");
+            insightsSection.className = "insights-section";
             insightsSection.innerHTML = `
               <h3>✨ Why You Match</h3>
               ${summaryHTML}
@@ -529,7 +704,7 @@
               </div>
             `;
 
-            const matchResult = document.getElementById('matchResult');
+            const matchResult = document.getElementById("matchResult");
             matchResult.insertBefore(insightsSection, matchResult.children[1]);
           }
 
@@ -544,8 +719,98 @@
         element.textContent = text || "N/A";
 
         if (highlightedFields.has(elementId)) {
-          element.parentElement.classList.add('highlighted-field');
+          element.parentElement.classList.add("highlighted-field");
         }
+      }
+
+      function displayTags(containerId, itemsStr, highlightedFields) {
+        const container = document.getElementById(containerId);
+
+        if (!itemsStr || itemsStr === "N/A") {
+          container.innerHTML = '<span class="no-data">No data</span>';
+          return;
+        }
+
+        const items = itemsStr.split(",").map((item) => item.trim());
+        const isHighlighted = highlightedFields.has(containerId);
+
+        container.innerHTML = items
+          .map(
+            (item) => `
+          <div class="tag-item ${isHighlighted ? "highlighted" : ""}">
+            <span class="tag-checkbox">✓</span>
+            <span class="tag-text">${item}</span>
+          </div>
+        `
+          )
+          .join("");
+      }
+
+      function displayAchievements(achievementsStr, highlightedFields) {
+        const achievements = [
+          {
+            name: "Made a breakup playlists",
+            image: "BreakupPlaylist.png",
+            key: "breakup",
+          },
+          {
+            name: "Played DJ on road trip",
+            image: "DjOnRoadTrip.png",
+            key: "dj",
+          },
+          {
+            name: "Used music to hype themselves up",
+            image: "HypeMusic.png",
+            key: "hype",
+          },
+          {
+            name: "Cried to a sad song",
+            image: "CriedToSadSong.png",
+            key: "cried",
+          },
+          {
+            name: "Shared a song to flirt",
+            image: "SharedSongFlirt.png",
+            key: "flirt",
+          },
+          {
+            name: "Made a playlist just for the vibes",
+            image: "MadeAPlaylist.png",
+            key: "vibe",
+          },
+          {
+            name: "Replayed the same song 10+ times",
+            image: "10PlusReplays.png",
+            key: "replay",
+          },
+        ];
+
+        const achievedList = achievementsStr
+          ? achievementsStr.toLowerCase()
+          : "";
+        const grid = document.getElementById("achievementsGrid");
+
+        grid.innerHTML = achievements
+          .map((achievement) => {
+            const unlocked = achievedList.includes(achievement.key);
+            const highlighted = highlightedFields.has("matchAchievements");
+
+            return `
+            <div class="achievement-badge ${unlocked ? "unlocked" : "locked"} ${
+              highlighted && unlocked ? "highlighted" : ""
+            }"
+                 title="${achievement.name}">
+              <div class="achievement-icon">
+                <img src="/static/images/${achievement.image}" alt="${
+              achievement.name
+            }">
+              </div>
+              <div class="achievement-name">${achievement.name}</div>
+              ${unlocked ? '<div class="achievement-checkmark">✓</div>' : ""}
+            </div>
+          `;
+          })
+          .join("");
       }
     </script>
   </body>
