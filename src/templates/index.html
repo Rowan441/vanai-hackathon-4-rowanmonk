@@ -121,7 +121,7 @@
           <!-- Personal Touches -->
           <div class="personal-section">
             <div class="personal-card">
-              <h3>🎤 Their Life's Theme Song</h3>
+              <h3>Their Life's Theme Song</h3>
               <div class="theme-song" id="matchThemeSong">-</div>
             </div>
             <div class="personal-card">
@@ -218,7 +218,7 @@
 
           <!-- Achievements Section -->
           <div class="achievements-section" id="matchAchievements">
-            <h3>🏆 Music Achievements Unlocked</h3>
+            <h3>🏆 Music Achievements</h3>
             <div class="achievements-grid" id="achievementsGrid">
               <!-- Achievements will be populated by JavaScript -->
             </div>
@@ -265,14 +265,14 @@
         },
         {
           id: 5,
-          question:
-            "In what situations are you listening music the most?",
+          question: "In what situations are you listening music the most?",
           placeholder: "e.g., 'While cooking dinner' or 'At the gym'",
           hint: "💡 Think about your daily routine - when do you reach for your headphones?",
         },
         {
           id: 6,
-          question: "How do you share music with others?. Or are you keeping it to yourself?",
+          question:
+            "How do you share music with others?. Or are you keeping it to yourself?",
           placeholder:
             "e.g., 'Always sharing my playlists' or 'It's my private thing'",
           hint: "💡 How social are you with your taste?",
@@ -498,7 +498,6 @@
             "similarityScore"
           ).textContent = `${similarityPercent}%`;
 
-
           // Field mapping for highlighting
           const fieldMap = {
             relationship_with_music: "matchRelationship",
@@ -675,7 +674,7 @@
               const summarySection = document.createElement("div");
               summarySection.className = "insights-section";
               summarySection.innerHTML = `
-                <h3>✨ Why You Match</h3>
+                <h3>✨ Why You Match ✨</h3>
                 <div class="match-summary">${summary}</div>
               `;
               const matchResult = document.getElementById("matchResult");
@@ -775,20 +774,19 @@
         }
 
         container.innerHTML = items
-          .map(
-            (item) => {
-              const itemLower = item.toLowerCase();
-              const noCheckbox = itemLower.includes("just replays their favourites") ||
-                                 itemLower.includes("doesn't share music");
+          .map((item) => {
+            const itemLower = item.toLowerCase();
+            const noCheckbox =
+              itemLower.includes("just replays their favourites") ||
+              itemLower.includes("doesn't share music");
 
-              return `
-          <div class="tag-item ${noCheckbox ? 'no-checkbox' : ''}">
-            ${noCheckbox ? '' : '<span class="tag-checkbox">✓</span>'}
+            return `
+          <div class="tag-item ${noCheckbox ? "no-checkbox" : ""}">
+            ${noCheckbox ? "" : '<span class="tag-checkbox">✓</span>'}
             <span class="tag-text">${item}</span>
           </div>
         `;
-            }
-          )
+          })
           .join("");
       }
 

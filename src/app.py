@@ -211,12 +211,14 @@ Identify ONLY truly meaningful similarities. Return 0-3 insights maximum - quali
 Requirements for each insight:
 - Must reference specific USER'S ANSWERS as evidence
 - Must be conversational and engaging
+- Must not reference the MATCHED PERSON field names
+- Must relate specifically to the CONTENT of the selected MATCHED PERSON field
 
 Format your response as a JSON object:
 {{
   "summary": "2-4 sentence summary explaining the match quality. If weak match, acknowledge it honestly. Write directly to the user using 'you'.",
   "insights": [
-    {{"field": "MATCHED PERSON field name", "insight": "Explanation that quotes or references the USER'S ANSWERS as proof of the connection. Do not make specific references to MATCHED PERSON fields other than the one chosen in this insight entry"}}
+    {{"field": "MATCHED PERSON field name", "insight": "Explanation that quotes or references the USER'S ANSWERS as proof of the connection. "}}
   ]
 }}
 
