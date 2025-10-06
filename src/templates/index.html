@@ -109,12 +109,53 @@
             <!-- Right Column: Music Profile -->
             <div class="list-section">
               <h3>🎵 Music DNA</h3>
-              <div class="info-label">Their genre</div>
+              <div class="info-label">✨ Their genre ✨</div>
               <div class="single-value" id="matchGenre">-</div>
-              <div class="info-label">Favorite Artist</div>
+              <div class="info-label">✨ Favorite Artist ✨</div>
               <div class="single-value" id="matchFavBand">-</div>
               <div class="info-label">First Loved Artist / Song:</div>
               <div class="single-value" id="matchFirstArtist">-</div>
+            </div>
+          </div>
+
+          <!-- Personal Touches -->
+          <div class="personal-section">
+            <div class="personal-card">
+              <h3>🎤 Their Life's Theme Song</h3>
+              <div class="theme-song" id="matchThemeSong">-</div>
+            </div>
+            <div class="personal-card">
+              <h3>Favorite Lyric</h3>
+              <div class="favorite-lyric" id="matchLyric">-</div>
+            </div>
+          </div>
+
+          <!-- Guilty Pleasure -->
+          <div
+            class="quote-section"
+            id="guiltyPleasureSection"
+            style="display: none"
+          >
+            <h3>😅 Guilty Pleasure</h3>
+            <div class="quote-card">
+              <p id="matchGuiltyPleasure">-</p>
+            </div>
+          </div>
+
+          <!-- AI Opinions Grid -->
+          <div class="ai-opinions">
+            <h3>🤖 AI Music Opinions</h3>
+            <div class="opinion-grid">
+              <div class="opinion-card">
+                <div class="opinion-title">Listening to AI-Generated Music</div>
+                <div class="opinion-text" id="matchAiSongs">-</div>
+              </div>
+              <div class="opinion-card">
+                <div class="opinion-title">
+                  Replicating Dead Artists' Voices
+                </div>
+                <div class="opinion-text" id="matchDeadArtists">-</div>
+              </div>
             </div>
           </div>
 
@@ -131,33 +172,6 @@
             <h3>🎧 Current Vibe</h3>
             <div class="quote-card">
               <p id="matchCurrentPref">-</p>
-            </div>
-          </div>
-
-          <!-- AI Opinions Grid -->
-          <div class="ai-opinions">
-            <h3>🤖 AI Music Opinions</h3>
-            <div class="opinion-grid">
-              <div class="opinion-card">
-                <div class="opinion-title">AI-Generated Music</div>
-                <div class="opinion-text" id="matchAiSongs">-</div>
-              </div>
-              <div class="opinion-card">
-                <div class="opinion-title">Dead Artists' Voices</div>
-                <div class="opinion-text" id="matchDeadArtists">-</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Personal Touches -->
-          <div class="personal-section">
-            <div class="personal-card">
-              <h3>🎤 Their Life's Theme Song</h3>
-              <div class="theme-song" id="matchThemeSong">-</div>
-            </div>
-            <div class="personal-card">
-              <h3>✨ Favorite Lyric</h3>
-              <div class="favorite-lyric" id="matchLyric">-</div>
             </div>
           </div>
 
@@ -203,22 +217,10 @@
           </div>
 
           <!-- Achievements Section -->
-          <div class="achievements-section">
+          <div class="achievements-section" id="matchAchievements">
             <h3>🏆 Music Achievements Unlocked</h3>
             <div class="achievements-grid" id="achievementsGrid">
               <!-- Achievements will be populated by JavaScript -->
-            </div>
-          </div>
-
-          <!-- Guilty Pleasure -->
-          <div
-            class="quote-section"
-            id="guiltyPleasureSection"
-            style="display: none"
-          >
-            <h3>😅 Guilty Pleasure</h3>
-            <div class="quote-card">
-              <p id="matchGuiltyPleasure">-</p>
             </div>
           </div>
 
@@ -252,7 +254,7 @@
           id: 3,
           question: "What kind of music are you into these days?",
           placeholder: "e.g., 'Sad girl indie' or 'Anything I can dance to'",
-          hint: "💡 Vibe, genre, mood - whatever",
+          hint: "💡 Vibe, genre, specific artists - whatever",
         },
         {
           id: 4,
@@ -264,15 +266,15 @@
         {
           id: 5,
           question:
-            "What about AI using dead artists' voices to make new songs?",
-          placeholder: "e.g., 'Kinda cool' or 'Feels wrong to me'",
-          hint: "💡 First reaction is fine",
+            "In what situations are you listening music the most?",
+          placeholder: "e.g., 'While cooking dinner' or 'At the gym'",
+          hint: "💡 Think about your daily routine - when do you reach for your headphones?",
         },
         {
           id: 6,
-          question: "Do you share music with people, or keep it to yourself?",
+          question: "How do you share music with others?. Or are you keeping it to yourself?",
           placeholder:
-            "e.g., 'Always sending songs' or 'It's my private thing'",
+            "e.g., 'Always sharing my playlists' or 'It's my private thing'",
           hint: "💡 How social are you with your taste?",
         },
       ];
@@ -518,7 +520,6 @@
             listening_contexts: "matchListeningContexts",
             // "listening contexts": "matchListeningContexts",
             music_achievements: "matchAchievements",
-            achievements: "matchAchievements",
             sharing_methods: "matchSharingMethods",
             sharing: "matchSharingMethods",
             guilty_pleasure: "matchGuiltyPleasure",
@@ -670,42 +671,78 @@
             );
           }
 
-          // Display insights at the top
-          if (insights.length > 0 || summary) {
-            const summaryHTML = summary
-              ? `
-              <div class="match-summary">
-                ${summary}
-              </div>
-            `
-              : "";
+          // Display summary and margin note insights
+          if (summary || insights.length > 0) {
+            // Add summary at the top if present
+            if (summary) {
+              const summarySection = document.createElement("div");
+              summarySection.className = "insights-section";
+              summarySection.innerHTML = `
+                <h3>✨ Why You Match</h3>
+                <div class="match-summary">${summary}</div>
+              `;
+              const matchResult = document.getElementById("matchResult");
+              matchResult.insertBefore(summarySection, matchResult.children[1]);
+            }
 
-            const insightsHTML = insights
-              .map(
-                (insight, idx) => `
-              <div class="insight-card" style="animation-delay: ${idx * 0.1}s">
-                <div class="insight-number">${idx + 1}</div>
-                <div class="insight-content">
-                  <div class="insight-field">${insight.field}</div>
-                  <div class="insight-text">${insight.insight}</div>
-                </div>
-              </div>
-            `
-              )
-              .join("");
+            // Place insights as margin notes next to their fields
+            insights.forEach((insight, idx) => {
+              const fieldLower = insight.field.toLowerCase();
+              let targetElementId = null;
 
-            const insightsSection = document.createElement("div");
-            insightsSection.className = "insights-section";
-            insightsSection.innerHTML = `
-              <h3>✨ Why You Match</h3>
-              ${summaryHTML}
-              <div class="insights-container">
-                ${insightsHTML}
-              </div>
-            `;
+              // Find the matching element ID
+              for (const [key, elementId] of Object.entries(fieldMap)) {
+                if (fieldLower.includes(key)) {
+                  targetElementId = elementId;
+                  break;
+                }
+              }
 
-            const matchResult = document.getElementById("matchResult");
-            matchResult.insertBefore(insightsSection, matchResult.children[1]);
+              if (targetElementId) {
+                const targetElement = document.getElementById(targetElementId);
+                if (targetElement) {
+                  console.log(targetElement);
+                  // Create margin note
+                  const marginNote = document.createElement("div");
+                  marginNote.className = "margin-note";
+                  marginNote.style.animationDelay = `${idx * 0.1}s`;
+                  marginNote.innerHTML = `
+                    <button class="margin-note-close" title="Dismiss">✕</button>
+                    <div class="margin-note-content">
+                      <div class="margin-note-text">✨ ${insight.insight} ✨</div>
+                    </div>
+                  `;
+
+                  // Add close button handler
+                  marginNote
+                    .querySelector(".margin-note-close")
+                    .addEventListener("click", function (e) {
+                      e.stopPropagation();
+                      marginNote.remove();
+                    });
+
+                  // Find the parent container to add relative positioning
+                  let container = targetElement.closest(
+                    ".quote-card, .opinion-card, .personal-card, .story-card, .single-value, .list-section, .achievements-section"
+                  );
+                  if (container) {
+                    container.style.position = "relative";
+
+                    // Determine if container is in left or right column
+                    const rect = container.getBoundingClientRect();
+                    const viewportCenter = window.innerWidth / 2;
+                    const containerCenter = rect.left + rect.width / 2;
+
+                    if (containerCenter < viewportCenter) {
+                      // Left side - put note on left margin
+                      marginNote.classList.add("margin-note-left");
+                    }
+
+                    container.appendChild(marginNote);
+                  }
+                }
+              }
+            });
           }
 
           // Animate in
@@ -734,14 +771,27 @@
         const items = itemsStr.split(",").map((item) => item.trim());
         const isHighlighted = highlightedFields.has(containerId);
 
+        if (isHighlighted) {
+          const listSection = container.closest(".list-section");
+          if (listSection) {
+            listSection.classList.add("highlighted-field");
+          }
+        }
+
         container.innerHTML = items
           .map(
-            (item) => `
-          <div class="tag-item ${isHighlighted ? "highlighted" : ""}">
-            <span class="tag-checkbox">✓</span>
+            (item) => {
+              const itemLower = item.toLowerCase();
+              const noCheckbox = itemLower.includes("just replays their favourites") ||
+                                 itemLower.includes("doesn't share music");
+
+              return `
+          <div class="tag-item ${noCheckbox ? 'no-checkbox' : ''}">
+            ${noCheckbox ? '' : '<span class="tag-checkbox">✓</span>'}
             <span class="tag-text">${item}</span>
           </div>
-        `
+        `;
+            }
           )
           .join("");
       }
@@ -789,16 +839,21 @@
           ? achievementsStr.toLowerCase()
           : "";
         const grid = document.getElementById("achievementsGrid");
+        const highlighted = highlightedFields.has("matchAchievements");
+
+        if (highlighted) {
+          const achievementsSection = grid.closest(".achievements-section");
+          if (achievementsSection) {
+            achievementsSection.classList.add("highlighted-field");
+          }
+        }
 
         grid.innerHTML = achievements
           .map((achievement) => {
             const unlocked = achievedList.includes(achievement.key);
-            const highlighted = highlightedFields.has("matchAchievements");
 
             return `
-            <div class="achievement-badge ${unlocked ? "unlocked" : "locked"} ${
-              highlighted && unlocked ? "highlighted" : ""
-            }"
+            <div class="achievement-badge ${unlocked ? "unlocked" : "locked"}"
                  title="${achievement.name}">
               <div class="achievement-icon">
                 <img src="/static/images/${achievement.image}" alt="${

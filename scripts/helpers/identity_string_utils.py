@@ -7,6 +7,8 @@ def create_survey_identity_string(row):
     Minimal processing - embeddings handle semantic matching
     """
     
+    # TODO: make this string use direct pronouns (e.g you) so it's more similar to user survey
+
     # Build string with natural language structure
     parts = []
     
@@ -107,24 +109,18 @@ def create_user_identity_string(answers):
     User quiz identity string
     Same natural language structure as survey
     """
-    parts = []
+    parts = ["Music questionnaire Data." ]
 
-    # Q1: Music relationship
-    parts.append(f"Music relationship: {answers.get('q1', '')}")
+    parts.append(f"What's your relationship with music like?: {answers.get('q1', '')}")
 
-    # Q2: Discovery background
-    parts.append(f"First discovered music through: {answers.get('q2', '')}")
+    parts.append(f"How did you first discover music you loved?: {answers.get('q2', '')}")
 
-    # Q3: Current music preference
-    parts.append(f"Current music preference: {answers.get('q3', '')}")
+    parts.append(f"What kind of music are you into these days?: {answers.get('q3', '')}")
 
-    # Q4: AI-generated music view
-    parts.append(f"View on AI-generated music: {answers.get('q4', '')}")
+    parts.append(f"Real talk - how do you feel about AI making music?: {answers.get('q4', '')}")
 
-    # Q5: AI using dead artists' voices
-    parts.append(f"View on AI using dead artists' voices: {answers.get('q5', '')}")
+    parts.append(f"In what situations are you listening music the most?: {answers.get('q5', '')}")
 
-    # Q6: Sharing behavior
-    parts.append(f"Shares music by: {answers.get('q6', '')}")
+    parts.append(f"How do you share music with others?. Or are you keeping it to yourself?: {answers.get('q6', '')}")
 
     return "\n".join(parts)

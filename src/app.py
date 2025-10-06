@@ -125,7 +125,7 @@ def submit_answers():
 
         # Build sharing methods
         sharing_methods = []
-        if matched_response.get('Q13_Share_the_music_you_love_1'): sharing_methods.append("Texts links")
+        if matched_response.get('Q13_Share_the_music_you_love_1'): sharing_methods.append("Texting Music Links")
         if matched_response.get('Q13_Share_the_music_you_love_2'): sharing_methods.append("Group chats")
         if matched_response.get('Q13_Share_the_music_you_love_3'): sharing_methods.append("Social media")
         if matched_response.get('Q13_Share_the_music_you_love_4'): sharing_methods.append("Shares playlists")
@@ -189,8 +189,8 @@ def analyze_match():
             "How did you first discover music you loved?": user_answers.get('q2', 'N/A'),
             "What kind of music are you into these days?": user_answers.get('q3', 'N/A'),
             "Real talk - how do you feel about AI making music": user_answers.get('q4', 'N/A'),
-            "What about AI using dead artists' voices to make new songs?": user_answers.get('q5', 'N/A'),
-            "Do you share music with people, or keep it to yourself?": user_answers.get('q6', 'N/A')
+            "In what situations are you listening music the most?": user_answers.get('q5', 'N/A'),
+            "How do you share music with others?. Or are you keeping it to yourself?": user_answers.get('q6', 'N/A')
         }
 
         import json as json_lib
@@ -206,26 +206,24 @@ USER'S ANSWERS:
 MATCHED PERSON'S FULL PROFILE:
 {match_json_str}
 
-Identify the TOP 0 to 3 most interesting similarities between them. Focus on:
-- Shared attitudes or philosophies about music
-- Similar emotional connections or behaviors
-- Aligned opinions on controversial topics (like AI music)
-- Common discovery patterns or influences
+Identify ONLY truly meaningful similarities. Return 0-3 insights maximum - quality over quantity. If there are no strong connections, return an empty insights array.
 
-If there are no similarities between them, return an empty list.
+Requirements for each insight:
+- Must reference specific USER'S ANSWERS as evidence
+- Must be conversational and engaging
 
 Format your response as a JSON object:
 {{
-  "summary": "2-3 sentence summary of the overall match and why these two are musically aligned. Write directly to the user using 'you'.",
+  "summary": "2-4 sentence summary explaining the match quality. If weak match, acknowledge it honestly. Write directly to the user using 'you'.",
   "insights": [
-    {{"field": "MATCHED PERSON field name", "insight": "1 sentence explanation of the similarity"}},
-    {{"field": "MATCHED PERSON field name", "insight": "1 sentence explanation of the similarity"}},
-    {{"field": "MATCHED PERSON field name", "insight": "1 sentence explanation of the similarity"}}
+    {{"field": "MATCHED PERSON field name", "insight": "Explanation that quotes or references the USER'S ANSWERS as proof of the connection. Do not make specific references to MATCHED PERSON fields other than the one chosen in this insight entry"}}
   ]
 }}
 
-Be engaging, conversational, and highlight what makes this match special.
-Write the explanation using "you" instead of "they". Talk directly to the user."""
+Example of a good insight: "You both see music as a form of self-expression - you said music is 'part of your identity' and they describe it as 'essential to who I am'."
+Example of a bad insight: "You both like music." (too vague, no evidence)
+
+Be honest, selective, and only highlight genuine connections."""
 
         response = client.chat.completions.create(
             model="gpt-4o-mini",
