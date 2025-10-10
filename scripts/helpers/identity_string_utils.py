@@ -7,8 +7,6 @@ def create_survey_identity_string(row):
     Minimal processing - embeddings handle semantic matching
     """
     
-    # TODO: make this string use direct pronouns (e.g you) so it's more similar to user survey
-
     # Build string with natural language structure
     parts = []
     
@@ -18,7 +16,7 @@ def create_survey_identity_string(row):
     # Discovery background
     parts.append(f"First discovered music through: {row['Q2_Discovering_music']}")
     if pd.notna(row['Q3_artist_that_pulled_you_in']):
-        parts.append(f"First artist that pulled them in: {row['Q3_artist_that_pulled_you_in']}")
+        parts.append(f"First artist that pulled you in: {row['Q3_artist_that_pulled_you_in']}")
     
     # # Format changes (shows adaptability)
     # if pd.notna(row['Q4_Music_format_changes']):
@@ -39,7 +37,7 @@ def create_survey_identity_string(row):
     if pd.notna(row['Q7_New_music_discover_6']): discovery_methods.append("music blogs")
     if pd.notna(row['Q7_New_music_discover_7']): discovery_methods.append("replays favorites")
     if discovery_methods:
-        parts.append(f"Discovers new music through: {', '.join(discovery_methods)}")
+        parts.append(f"Discover new music through: {', '.join(discovery_methods)}")
     
     # AI attitudes (CRITICAL)
     parts.append(f"View on AI-generated music: {row['Q10_Songs_by_AI']}")
@@ -59,32 +57,32 @@ def create_survey_identity_string(row):
         if pd.notna(row[field]) and row[field] in ['Often', 'Always']:
             listening_contexts.append(context)
     if listening_contexts:
-        parts.append(f"Listens to music often/always when: {', '.join(listening_contexts)}")
+        parts.append(f"Listen to music often/always when: {', '.join(listening_contexts)}")
     
     # Engagement behaviors
     behaviors = []
     if pd.notna(row['Q12_Music_bingo_1']): behaviors.append("makes breakup playlists")
-    if pd.notna(row['Q12_Music_bingo_2']): behaviors.append("plays DJ on road trips")
-    if pd.notna(row['Q12_Music_bingo_3']): behaviors.append("uses music for motivation")
-    if pd.notna(row['Q12_Music_bingo_4']): behaviors.append("cries to sad songs")
-    if pd.notna(row['Q12_Music_bingo_5']): behaviors.append("shares songs romantically")
-    if pd.notna(row['Q12_Music_bingo_6']): behaviors.append("makes vibe playlists")
-    if pd.notna(row['Q12_Music_bingo_7']): behaviors.append("replays same song many times")
+    if pd.notna(row['Q12_Music_bingo_2']): behaviors.append("play DJ on road trips")
+    if pd.notna(row['Q12_Music_bingo_3']): behaviors.append("use music for motivation")
+    if pd.notna(row['Q12_Music_bingo_4']): behaviors.append("crie to sad songs")
+    if pd.notna(row['Q12_Music_bingo_5']): behaviors.append("share songs romantically")
+    if pd.notna(row['Q12_Music_bingo_6']): behaviors.append("make vibe playlists")
+    if pd.notna(row['Q12_Music_bingo_7']): behaviors.append("replay same song many times")
     if behaviors:
         parts.append(f"Music behaviors: {', '.join(behaviors)}")
     
     # Sharing behavior (social dimension)
     sharing_methods = []
-    if pd.notna(row['Q13_Share_the_music_you_love_1']): sharing_methods.append("texts links")
+    if pd.notna(row['Q13_Share_the_music_you_love_1']): sharing_methods.append("text links")
     if pd.notna(row['Q13_Share_the_music_you_love_2']): sharing_methods.append("group chats")
     if pd.notna(row['Q13_Share_the_music_you_love_3']): sharing_methods.append("social media")
     if pd.notna(row['Q13_Share_the_music_you_love_4']): sharing_methods.append("curates playlists")
     if pd.notna(row['Q13_Share_the_music_you_love_5']): sharing_methods.append("in-person")
     
     if pd.notna(row['Q13_Share_the_music_you_love_6']):
-        parts.append("Doesn't share music")
+        parts.append("Don't share music")
     elif sharing_methods:
-        parts.append(f"Shares music by: {', '.join(sharing_methods)}")
+        parts.append(f"Share music by: {', '.join(sharing_methods)}")
     
     parts.append(f"When friend shares music: {row['Q14_Friend_shares_a_song']}")
     
