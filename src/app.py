@@ -190,7 +190,7 @@ def analyze_match():
             "What kind of music are you into these days?": user_answers.get('q3', 'N/A'),
             "Real talk - how do you feel about AI making music": user_answers.get('q4', 'N/A'),
             "In what situations are you listening music the most?": user_answers.get('q5', 'N/A'),
-            "How do you share music with others?. Or are you keeping it to yourself?": user_answers.get('q6', 'N/A')
+            "How do you share music with others? Or are you keeping it to yourself?": user_answers.get('q6', 'N/A')
         }
 
         import json as json_lib

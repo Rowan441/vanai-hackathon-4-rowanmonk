@@ -119,6 +119,6 @@ def create_user_identity_string(answers):
 
     parts.append(f"In what situations are you listening music the most?: {answers.get('q5', '')}")
 
-    parts.append(f"How do you share music with others?. Or are you keeping it to yourself?: {answers.get('q6', '')}")
+    parts.append(f"How do you share music with others? Or are you keeping it to yourself?: {answers.get('q6', '')}")
 
     return "\n".join(parts)
