@@ -149,18 +149,8 @@ def generate_avatar_prompt(physical_desc, ai_level, intensity_level, sociality_l
 
     if pd.notna(favourite_genre):
         genre_lower = str(favourite_genre).lower()
-        if 'rock' in genre_lower or 'metal' in genre_lower:
-            wearing += "leather jacket. "
-        elif 'hip hop' in genre_lower or 'rap' in genre_lower:
-            wearing += "streetwear and chains. "
-        elif 'punk' in genre_lower:
-            wearing += "punk fashion with patches. "
-        elif 'indie' in genre_lower or 'alternative' in genre_lower:
-            wearing += "vintage/thrift store fashion. "
-        elif 'country' in genre_lower:
-            wearing += "denim and boots. "
-        elif 'electronic' in genre_lower or 'edm' in genre_lower:
-            wearing += "rave/festival fashion. "
+        if "other" not in genre_lower:
+            wearing += genre_lower + " fashion. "
         else:
             wearing += "casual music fan attire. "
     else:
@@ -176,29 +166,27 @@ def generate_avatar_prompt(physical_desc, ai_level, intensity_level, sociality_l
     elif intensity_level == IntensityLevel.CASUAL:
         prompt += "Relaxed expression. Casually enjoying the music. "
     else:
-        prompt += "Understated expression, minimal music accessories. "
+        prompt += "Understated expression. "
 
-    # Sociality influences background/setting - number of people
-    if sociality_level == SocialityLevel.ACTIVE_CURATOR:
-        prompt += "Background: Crowd of friends around them. "
-    elif sociality_level == SocialityLevel.SOCIAL_LISTENER:
-        prompt += "Background: With 2-3 close friends, intimate music sharing moment. "
-    elif sociality_level == SocialityLevel.CASUAL_SHARER:
-        prompt += "Background: One friend in the background, casual setting. "
-    else:
-        prompt += "Background: Alone "
+    # # Sociality influences background/setting - number of people
+    # if sociality_level == SocialityLevel.ACTIVE_CURATOR:
+    #     prompt += "Background: Crowd of friends around them. "
+    # elif sociality_level == SocialityLevel.SOCIAL_LISTENER:
+    #     prompt += "Background: With 2-3 close friends, intimate music sharing moment. "
+    # elif sociality_level == SocialityLevel.CASUAL_SHARER:
+    #     prompt += "Background: One friend in the background, casual setting. "
+    # else:
+    #     prompt += "Background: Alone "
 
     # AI attitude influences aesthetic style/lighting
     if ai_level == AISpectrumLevel.EMBRACER:
-        prompt += "Futuristic digital aesthetic with neon lighting, holographic elements, cyberpunk vibes. "
-    elif ai_level == AISpectrumLevel.CURIOUS:
-        prompt += "Modern aesthetic mixing LED lights with vinyl records, digital-analog hybrid. "
-    elif ai_level == AISpectrumLevel.UNCERTAIN:
-        prompt += "Balanced aesthetic, warm natural lighting. "
+        prompt += "Futuristic digital aesthetic. "
+    elif ai_level == AISpectrumLevel.CURIOUS or ai_level == AISpectrumLevel.UNCERTAIN:
+        prompt += "Modern aesthetic. "
     else:
-        prompt += "Classic vintage aesthetic, warm analog lighting, retro equipment, nostalgic feel. "
+        prompt += "Classic vintage aesthetic."
 
-    prompt += "Highly detailed digital illustration, expressive character portrait, music-themed."
+    prompt += "Highly detailed digital illustration, character portrait, music-themed."
 
     return prompt
 

@@ -260,7 +260,7 @@ button {
 
 /* Hidden state */
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 /* Results screen */
@@ -398,6 +398,53 @@ button {
   }
 }
 
+/* AI Avatar Section */
+.avatar-section {
+  margin: 40px 0;
+  text-align: center;
+}
+
+.avatar-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  padding: 40px;
+}
+
+.avatar-loading p {
+  color: #999;
+  font-size: 1.1rem;
+}
+
+.avatar-container {
+  animation: fadeInUp 0.8s ease;
+}
+
+.avatar-image {
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.avatar-image:hover {
+  transform: scale(1.02);
+  box-shadow: 0 15px 50px rgba(102, 126, 234, 0.6);
+}
+
+.avatar-caption {
+  margin-top: 15px;
+  color: #999;
+  font-size: 0.9rem;
+  font-style: italic;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .similarity-score {
   font-size: 3rem;
   font-weight: 800;
@@ -475,26 +522,41 @@ button {
 .quote-card {
   background: linear-gradient(
     135deg,
-    rgba(102, 126, 234, 0.1),
-    rgba(118, 75, 162, 0.1)
+    rgba(102, 126, 234, 0.2),
+    rgba(118, 75, 162, 0.2)
   );
-  border-left: 4px solid #667eea;
-  padding: 25px;
-  border-radius: 12px;
-  font-size: 1.1rem;
+  border-left: 5px solid #667eea;
+  padding: 30px;
+  margin-bottom: 30px;
+  border-radius: 15px;
+  font-size: 1.2rem;
   font-style: italic;
-  line-height: 1.6;
-  color: #e0e0e0;
+  line-height: 1.7;
+  color: #f0f0f0;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+  position: relative;
+}
+
+.quote-card::before {
+  content: '"';
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  font-size: 3rem;
+  color: rgba(102, 126, 234, 0.3);
+  font-family: Georgia, serif;
+  line-height: 1;
 }
 
 .quote-card:hover {
   background: linear-gradient(
     135deg,
-    rgba(102, 126, 234, 0.15),
-    rgba(118, 75, 162, 0.15)
+    rgba(102, 126, 234, 0.25),
+    rgba(118, 75, 162, 0.25)
   );
-  transform: translateX(5px);
+  transform: translateX(8px) translateY(-2px);
+  box-shadow: 0 6px 30px rgba(102, 126, 234, 0.5);
 }
 
 /* AI Opinions */

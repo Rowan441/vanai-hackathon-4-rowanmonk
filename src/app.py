@@ -10,6 +10,7 @@ from openai import OpenAI
 # Add scripts to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'scripts'))
 from helpers.identity_string_utils import create_user_identity_string
+from helpers.generate_image_prompt import create_image_prompt_from_survey
 from models import RespondentProfile, MatchResult, QuestionnaireResponse
 
 # Initialize OpenAI client
@@ -257,6 +258,61 @@ Be honest, selective, and only highlight genuine connections."""
 
     except Exception as e:
         print(f"Error analyzing match: {str(e)}")
+        return jsonify({
+            "status": "error",
+            "message": str(e)
+        }), 400
+
+
+@app.route("/generate_avatar", methods=["POST"])
+def generate_avatar():
+    """Generate AI avatar for matched profile using DALL-E"""
+    try:
+        data = request.get_json()
+        participant_id = data.get('participant_id')
+
+        if not participant_id:
+            return jsonify({
+                "status": "error",
+                "message": "participant_id required"
+            }), 400
+
+        # Load survey data to find the matched response
+        survey_data = load_survey_data()
+        matched_response = next(
+            (r for r in survey_data if r['participant_id'] == participant_id),
+            None
+        )
+
+        if not matched_response:
+            return jsonify({
+                "status": "error",
+                "message": "Participant not found"
+            }), 404
+
+        # Generate image prompt from survey data
+        image_prompt = create_image_prompt_from_survey(matched_response)
+
+        print(f"Generated prompt: {image_prompt}")
+
+        # Generate image using DALL-E
+        response = client.images.generate(
+            model="dall-e-3",
+            prompt=image_prompt,
+            size="1024x1024",
+            quality="standard",
+            n=1,
+        )
+
+        image_url = response.data[0].url
+
+        return jsonify({
+            "status": "success",
+            "image_url": image_url,
+        }), 200
+
+    except Exception as e:
+        print(f"Error generating avatar: {str(e)}")
         return jsonify({
             "status": "error",
             "message": str(e)

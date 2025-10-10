@@ -88,6 +88,17 @@
             </div>
           </div>
 
+          <!-- AI Avatar Section -->
+          <div class="avatar-section" id="avatarSection">
+            <div class="avatar-loading" id="avatarLoading">
+              <div class="spinner"></div>
+              <p>Generating AI avatar...</p>
+            </div>
+            <div class="avatar-container hidden" id="avatarContainer">
+              <img id="avatarImage" src="" alt="AI Generated Avatar" class="avatar-image">
+            </div>
+          </div>
+
           <div class="list-sections">
             <!-- Left Column: Demographics -->
             <div class="list-section">
@@ -114,19 +125,21 @@
               <div class="info-label">✨ Favorite Artist ✨</div>
               <div class="single-value" id="matchFavBand">-</div>
               <div class="info-label">First Loved Artist / Song:</div>
-              <div class="single-value" id="matchFirstArtist">-</div>
+              <div class="single-value quote-value" id="matchFirstArtist">
+                -
+              </div>
             </div>
           </div>
 
           <!-- Personal Touches -->
-          <div class="personal-section">
-            <div class="personal-card">
-              <h3>Their Life's Theme Song</h3>
-              <div class="theme-song" id="matchThemeSong">-</div>
+          <div class="quote-section">
+            <h3>Their Life's Theme Song</h3>
+            <div class="quote-card">
+              <p class="theme-song" id="matchThemeSong">-</p>
             </div>
-            <div class="personal-card">
-              <h3>Favorite Lyric</h3>
-              <div class="favorite-lyric" id="matchLyric">-</div>
+            <h3>Favorite Lyric</h3>
+            <div class="quote-card">
+              <p class="favorite-lyric" id="matchLyric">-</p>
             </div>
           </div>
 
@@ -160,17 +173,17 @@
           </div>
 
           <!-- Music Relationship -->
-          <div class="quote-section">
+          <div class="story-section">
             <h3>💭 Their Relationship with Music</h3>
-            <div class="quote-card">
+            <div class="story-card">
               <p id="matchRelationship">-</p>
             </div>
           </div>
 
           <!-- Current Vibe -->
-          <div class="quote-section">
+          <div class="story-section">
             <h3>🎧 Current Vibe</h3>
-            <div class="quote-card">
+            <div class="story-card">
               <p id="matchCurrentPref">-</p>
             </div>
           </div>
@@ -272,7 +285,7 @@
         {
           id: 6,
           question:
-            "How do you share music with others?. Or are you keeping it to yourself?",
+            "How do you share music with others? Or are you keeping it to yourself?",
           placeholder:
             "e.g., 'Always sharing my playlists' or 'It's my private thing'",
           hint: "💡 How social are you with your taste?",
@@ -466,6 +479,9 @@
                     analysisData.insights || [],
                     analysisData.summary || ""
                   );
+
+                  // Generate AI avatar
+                  generateAvatar(data.match.participant_id);
                 });
             } else {
               throw new Error(data.message || "Unknown error");
@@ -546,23 +562,6 @@
             profile.gender || "N/A";
           document.getElementById("matchLocation").textContent =
             profile.location || "N/A";
-
-          // Music DNA (with highlighting)
-          // setFieldWithHighlight(
-          //   "matchGenre",
-          //   profile.favorite_genre,
-          //   highlightedFields
-          // );
-          // setFieldWithHighlight(
-          //   "matchFavBand",
-          //   profile.favorite_band,
-          //   highlightedFields
-          // );
-          // setFieldWithHighlight(
-          //   "matchFirstArtist",
-          //   profile.first_song_artist_love,
-          //   highlightedFields
-          // );
 
           // Friend shares (single value with highlighting)
           const favorite_genreEl = document.getElementById("matchGenre");
@@ -860,6 +859,40 @@
           `;
           })
           .join("");
+      }
+
+      function generateAvatar(participantId) {
+        // Show loading state
+        document.getElementById("avatarLoading").classList.remove("hidden");
+        document.getElementById("avatarContainer").classList.add("hidden");
+
+        fetch("/generate_avatar", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ participant_id: participantId }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.status === "success") {
+              // Hide loading, show avatar
+              document.getElementById("avatarLoading").classList.add("hidden");
+              document.getElementById("avatarContainer").classList.remove("hidden");
+
+              // Set image and caption
+              document.getElementById("avatarImage").src = data.image_url;
+            } else {
+              // Hide avatar section on error
+              document.getElementById("avatarSection").style.display = "none";
+              console.error("Avatar generation failed:", data.message);
+            }
+          })
+          .catch((error) => {
+            // Hide avatar section on error
+            document.getElementById("avatarSection").style.display = "none";
+            console.error("Error generating avatar:", error);
+          });
       }
     </script>
   </body>

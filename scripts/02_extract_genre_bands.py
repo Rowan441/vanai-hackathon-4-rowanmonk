@@ -35,6 +35,8 @@ class MusicGenre(Enum):
     KPOP = "k-pop"
     OTHER = "other"
 
+# TODO add 'none/all' genre
+
 def extract_genre_and_band(row: pd.Series) -> dict:
     """
     Extract genre and favourite band from survey responses using OpenAI API.
