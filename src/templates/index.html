@@ -68,6 +68,31 @@
         </div>
       </div>
 
+      <!-- User Avatar Modal -->
+      <div id="userAvatarModal" class="modal hidden">
+        <div class="modal-content">
+          <button class="modal-close" id="closeModal">&times;</button>
+          <h2>Create Your Avatar</h2>
+          <p style="color: #312020; margin-bottom: 20px;">Enter a participant ID to generate your avatar</p>
+
+          <input
+            type="text"
+            id="userParticipantId"
+            class="modal-input"
+            placeholder="Enter participant ID..."
+          />
+
+          <button class="btn-primary" id="generateUserAvatar">
+            Generate Avatar
+          </button>
+
+          <div id="userAvatarModalLoading" class="hidden" style="margin-top: 20px;">
+            <div class="spinner"></div>
+            <p style="color: #999; margin-top: 10px;">Generating your avatar...</p>
+          </div>
+        </div>
+      </div>
+
       <!-- Results Screen -->
       <div id="resultsScreen" class="question-card hidden">
         <div class="results" id="loadingState">
@@ -90,12 +115,32 @@
 
           <!-- AI Avatar Section -->
           <div class="avatar-section" id="avatarSection">
-            <div class="avatar-loading" id="avatarLoading">
-              <div class="spinner"></div>
-              <p>Generating AI avatar...</p>
-            </div>
-            <div class="avatar-container hidden" id="avatarContainer">
-              <img id="avatarImage" src="" alt="AI Generated Avatar" class="avatar-image">
+            <div class="avatars-grid">
+              <!-- User Avatar (Left) -->
+              <div class="avatar-item">
+                <h3 class="avatar-title">Your Avatar</h3>
+                <div class="avatar-placeholder" id="userAvatarPlaceholder">
+                  <button class="create-avatar-btn" id="createUserAvatar">
+                    <span class="avatar-plus">+</span>
+                    <span>Create Your Avatar</span>
+                  </button>
+                </div>
+                <div class="avatar-container hidden" id="userAvatarContainer">
+                  <img id="userAvatarImage" src="" alt="Your AI Avatar" class="avatar-image">
+                </div>
+              </div>
+
+              <!-- Match Avatar (Right) -->
+              <div class="avatar-item">
+                <h3 class="avatar-title">Your Match's Avatar</h3>
+                <div class="avatar-loading" id="matchAvatarLoading">
+                  <div class="spinner"></div>
+                  <p>Generating avatar...</p>
+                </div>
+                <div class="avatar-container hidden" id="matchAvatarContainer">
+                  <img id="matchAvatarImage" src="" alt="Match's AI Avatar" class="avatar-image">
+                </div>
+              </div>
             </div>
           </div>
 
@@ -565,20 +610,20 @@
 
           // Friend shares (single value with highlighting)
           const favorite_genreEl = document.getElementById("matchGenre");
-          favorite_genreEl.textContent = profile.favorite_genre || "N/A";
+          favorite_genreEl.innerHTML = profile.favorite_genre || "N/A";
           if (highlightedFields.has("matchGenre")) {
             favorite_genreEl.classList.add("highlighted-single-value");
           }
           // Friend shares (single value with highlighting)
           const favorite_bandEl = document.getElementById("matchFavBand");
-          favorite_bandEl.textContent = profile.favorite_band || "N/A";
+          favorite_bandEl.innerHTML = profile.favorite_band || "N/A";
           if (highlightedFields.has("matchFavBand")) {
             favorite_bandEl.classList.add("highlighted-single-value");
           }
           // Friend shares (single value with highlighting)
           const first_song_artist_loveEl =
             document.getElementById("matchFirstArtist");
-          first_song_artist_loveEl.textContent =
+          first_song_artist_loveEl.innerHTML =
             profile.first_song_artist_love || "N/A";
           if (highlightedFields.has("matchFirstArtist")) {
             first_song_artist_loveEl.classList.add("highlighted-single-value");
@@ -747,7 +792,7 @@
 
       function setFieldWithHighlight(elementId, text, highlightedFields) {
         const element = document.getElementById(elementId);
-        element.textContent = text || "N/A";
+        element.innerHTML = text || "N/A";
 
         if (highlightedFields.has(elementId)) {
           element.parentElement.classList.add("highlighted-field");
@@ -862,9 +907,9 @@
       }
 
       function generateAvatar(participantId) {
-        // Show loading state
-        document.getElementById("avatarLoading").classList.remove("hidden");
-        document.getElementById("avatarContainer").classList.add("hidden");
+        // Show loading state for match avatar
+        document.getElementById("matchAvatarLoading").classList.remove("hidden");
+        document.getElementById("matchAvatarContainer").classList.add("hidden");
 
         fetch("/generate_avatar", {
           method: "POST",
@@ -876,24 +921,86 @@
           .then((response) => response.json())
           .then((data) => {
             if (data.status === "success") {
-              // Hide loading, show avatar
-              document.getElementById("avatarLoading").classList.add("hidden");
-              document.getElementById("avatarContainer").classList.remove("hidden");
+              // Hide loading, show match avatar
+              document.getElementById("matchAvatarLoading").classList.add("hidden");
+              document.getElementById("matchAvatarContainer").classList.remove("hidden");
 
               // Set image and caption
-              document.getElementById("avatarImage").src = data.image_url;
+              document.getElementById("matchAvatarImage").src = data.image_url;
+              document.getElementById("matchAvatarPrompt").textContent = data.prompt;
             } else {
-              // Hide avatar section on error
-              document.getElementById("avatarSection").style.display = "none";
+              // Show error in match avatar section
+              document.getElementById("matchAvatarLoading").innerHTML = '<p style="color: #ff6b6b;">Failed to generate avatar</p>';
               console.error("Avatar generation failed:", data.message);
             }
           })
           .catch((error) => {
-            // Hide avatar section on error
-            document.getElementById("avatarSection").style.display = "none";
+            // Show error in match avatar section
+            document.getElementById("matchAvatarLoading").innerHTML = '<p style="color: #ff6b6b;">Error generating avatar</p>';
             console.error("Error generating avatar:", error);
           });
       }
+
+      // User avatar creation modal handlers
+      document.getElementById("createUserAvatar")?.addEventListener("click", function() {
+        document.getElementById("userAvatarModal").classList.remove("hidden");
+      });
+
+      document.getElementById("closeModal")?.addEventListener("click", function() {
+        document.getElementById("userAvatarModal").classList.add("hidden");
+      });
+
+      // Close modal on outside click
+      document.getElementById("userAvatarModal")?.addEventListener("click", function(e) {
+        if (e.target.id === "userAvatarModal") {
+          document.getElementById("userAvatarModal").classList.add("hidden");
+        }
+      });
+
+      // Generate user avatar
+      document.getElementById("generateUserAvatar")?.addEventListener("click", function() {
+        const participantId = document.getElementById("userParticipantId").value.trim();
+
+        if (!participantId) {
+          alert("Please enter a participant ID");
+          return;
+        }
+
+        // Show loading
+        document.getElementById("userAvatarModalLoading").classList.remove("hidden");
+
+        fetch("/generate_avatar", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ participant_id: participantId }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.status === "success") {
+              // Hide placeholder, show user avatar
+              document.getElementById("userAvatarPlaceholder").classList.add("hidden");
+              document.getElementById("userAvatarContainer").classList.remove("hidden");
+
+              // Set image and caption
+              document.getElementById("userAvatarImage").src = data.image_url;
+              document.getElementById("userAvatarPrompt").textContent = data.prompt;
+
+              // Close modal
+              document.getElementById("userAvatarModal").classList.add("hidden");
+              document.getElementById("userAvatarModalLoading").classList.add("hidden");
+              document.getElementById("userParticipantId").value = "";
+            } else {
+              alert("Error: " + data.message);
+              document.getElementById("userAvatarModalLoading").classList.add("hidden");
+            }
+          })
+          .catch((error) => {
+            alert("Error generating avatar: " + error);
+            document.getElementById("userAvatarModalLoading").classList.add("hidden");
+          });
+      });
     </script>
   </body>
 </html>

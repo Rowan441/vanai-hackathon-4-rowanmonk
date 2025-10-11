@@ -401,7 +401,77 @@ button {
 /* AI Avatar Section */
 .avatar-section {
   margin: 40px 0;
+}
+
+.avatars-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin: 0 auto;
+  max-width: 1200px;
+}
+
+@media (max-width: 900px) {
+  .avatars-grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+}
+
+.avatar-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.avatar-title {
+  font-size: 1.3rem;
+  margin-bottom: 20px;
+  color: #667eea;
   text-align: center;
+}
+
+.avatar-placeholder {
+  width: 100%;
+  max-width: 400px;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px dashed rgba(102, 126, 234, 0.4);
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.avatar-placeholder:hover {
+  background: rgba(102, 126, 234, 0.1);
+  border-color: rgba(102, 126, 234, 0.6);
+}
+
+.create-avatar-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  background: none;
+  border: none;
+  color: #667eea;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  padding: 20px;
+}
+
+.create-avatar-btn:hover {
+  color: #f093fb;
+  transform: scale(1.05);
+}
+
+.avatar-plus {
+  font-size: 4rem;
+  font-weight: 200;
+  line-height: 1;
 }
 
 .avatar-loading {
@@ -410,20 +480,23 @@ button {
   align-items: center;
   gap: 15px;
   padding: 40px;
+  width: 100%;
+  max-width: 400px;
 }
 
 .avatar-loading p {
   color: #999;
-  font-size: 1.1rem;
+  font-size: 1rem;
 }
 
 .avatar-container {
   animation: fadeInUp 0.8s ease;
+  width: 100%;
+  max-width: 400px;
 }
 
 .avatar-image {
   width: 100%;
-  max-width: 500px;
   height: auto;
   border-radius: 20px;
   box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
@@ -438,11 +511,9 @@ button {
 .avatar-caption {
   margin-top: 15px;
   color: #999;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-style: italic;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
+  text-align: center;
 }
 
 .similarity-score {
@@ -1058,6 +1129,99 @@ button {
   line-height: 1.2;
 }
 
+/* Modal Styles */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background: rgba(20, 20, 30, 0.95);
+  border: 2px solid rgba(102, 126, 234, 0.4);
+  border-radius: 20px;
+  padding: 40px;
+  max-width: 500px;
+  width: 90%;
+  position: relative;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-content h2 {
+  color: #667eea;
+  margin-bottom: 10px;
+}
+
+.modal-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 2rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  line-height: 1;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+}
+
+.modal-close:hover {
+  color: #f093fb;
+}
+
+.modal-input {
+  width: 100%;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(102, 126, 234, 0.3);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 1rem;
+  margin-bottom: 20px;
+  transition: border-color 0.3s ease;
+}
+
+.modal-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.modal-input::placeholder {
+  color: #666;
+}
+
 .tag-item.no-checkbox {
   background: rgba(102, 126, 234, 0.08);
   border-color: rgba(102, 126, 234, 0.2);
@@ -1249,4 +1413,39 @@ button {
   .similarity-score {
     font-size: 2.5rem;
   }
+}
+
+/* Music Entity Links (Spotify links) */
+a.music-entity {
+  color: #1db954;
+  text-decoration: none;
+  font-weight: 600;
+  border-bottom: 2px solid rgba(29, 185, 84, 0.3);
+  transition: all 0.3s ease;
+  position: relative;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+a.music-entity:hover {
+  background: rgba(29, 185, 84, 0.1);
+  border-bottom-color: #1db954;
+  color: #1ed760;
+}
+
+a.music-entity:active {
+  transform: scale(0.98);
+}
+
+/* Optional: Add Spotify icon after links */
+a.music-entity::after {
+  content: "🎵";
+  font-size: 0.8em;
+  margin-left: 4px;
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+}
+
+a.music-entity:hover::after {
+  opacity: 1;
 }

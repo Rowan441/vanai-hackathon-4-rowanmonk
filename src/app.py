@@ -6,6 +6,7 @@ import sys
 import numpy as np
 from collections import Counter
 from openai import OpenAI
+import re
 
 # Add scripts to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'scripts'))
@@ -22,11 +23,53 @@ BASE_DIR = os.path.dirname(__file__)
 app = Flask(__name__)
 
 def load_survey_data():
-    """Load survey data from CSV"""
-    survey_file = os.path.join(BASE_DIR, "../data/processed/02_music_survey_with_genres.csv")
-    with open(survey_file, 'r', encoding='utf-8') as f:
+    """Load survey data from CSV with extracted entities"""
+    # Load data with extracted entities
+    entities_file = os.path.join(BASE_DIR, "../data/processed/03_music_survey_with_extracted_entities.csv")
+    with open(entities_file, 'r', encoding='utf-8') as f:
         reader = csv.DictReader(f)
         return list(reader)
+
+def convert_entities_to_html(text, entities_json):
+    """Convert text with entity annotations to HTML with Spotify links"""
+    if not entities_json or entities_json == 'nan' or str(entities_json).strip() == '':
+        return text
+
+    try:
+        data = json.loads(entities_json)
+    except (json.JSONDecodeError, TypeError):
+        return text
+
+    if not data or 'annotated_text' not in data:
+        return text
+
+    # Start with the annotated text
+    html = data['annotated_text']
+
+    # Replace each entity marker with HTML
+    pattern = r'\|\|(\{[^}]+\})([^|]+)\|\|'
+
+    def replace_entity(match):
+        try:
+            metadata = json.loads(match.group(1))
+            matched_text = match.group(2)
+
+            # Find corresponding entity with spotify_url
+            spotify_url = None
+            for entity in data.get('entities', []):
+                if entity.get('matched_text') == matched_text:
+                    spotify_url = entity.get('spotify_url')
+                    break
+
+            if spotify_url:
+                return f'<a href="{spotify_url}" target="_blank" class="music-entity">{matched_text}</a>'
+            else:
+                return matched_text
+        except:
+            return match.group(2)
+
+    html = re.sub(pattern, replace_entity, html)
+    return html
 
 def load_embeddings():
     """Load embeddings data"""
@@ -133,13 +176,35 @@ def submit_answers():
         if matched_response.get('Q13_Share_the_music_you_love_5'): sharing_methods.append("In-person")
         if matched_response.get('Q13_Share_the_music_you_love_6'): sharing_methods.append("Doesn't share music")
 
+        # Convert extracted entities to HTML with Spotify links
+        first_artist_html = convert_entities_to_html(
+            matched_response.get('Q3_artist_that_pulled_you_in', 'N/A'),
+            matched_response.get('Q3_extracted_entities')
+        )
+        guilty_pleasure_html = convert_entities_to_html(
+            matched_response.get('Q16_Music_guilty_pleasure_text_OE', 'N/A'),
+            matched_response.get('Q16_extracted_entities')
+        )
+        theme_song_html = convert_entities_to_html(
+            matched_response.get('Q18_Life_theme_song', 'N/A'),
+            matched_response.get('Q18_extracted_entities')
+        )
+        favorite_lyric_html = convert_entities_to_html(
+            matched_response.get('Q19_Lyric_that_stuck_with_you', 'N/A'),
+            matched_response.get('Q19_extracted_entities')
+        )
+        favorite_band_html = convert_entities_to_html(
+            matched_response.get('extracted_favourite_band', 'N/A'),
+            matched_response.get('extracted_favourite_band_entities')
+        )
+
         profile = RespondentProfile(
             age=matched_response.get('Age', 'N/A'),
             gender=matched_response.get('Gender', 'N/A'),
             location=", ".join(filter(None, [matched_response.get('CMA'), matched_response.get('Province')])) or "N/A",
             relationship_with_music=matched_response.get('Q1_Relationship_with_music', 'N/A'),
             discovering_music=matched_response.get('Q2_Discovering_music', 'N/A'),
-            first_song_artist_love=matched_response.get('Q3_artist_that_pulled_you_in', 'N/A'),
+            first_song_artist_love=first_artist_html,
             format_change=matched_response.get('Q4_Music_format_changes', 'N/A'),
             format_change_memory=matched_response.get('Q5_Music_format_change_impact', 'N/A'),
             format_change_feelings=matched_response.get('Q6_Music_format_change_feelings', 'N/A'),
@@ -152,11 +217,11 @@ def submit_answers():
             sharing_methods=', '.join(sharing_methods) if sharing_methods else 'N/A',
             friend_shares_reaction=matched_response.get('Q14_Friend_shares_a_song', 'N/A'),
             guilty_pleasure_attitude=matched_response.get('Q15_Music_guilty_pleasure', 'N/A'),
-            guilty_pleasure_song=matched_response.get('Q16_Music_guilty_pleasure_text_OE', 'N/A'),
-            theme_song=matched_response.get('Q18_Life_theme_song', 'N/A'),
-            favorite_lyric=matched_response.get('Q19_Lyric_that_stuck_with_you', 'N/A'),
+            guilty_pleasure_song=guilty_pleasure_html,
+            theme_song=theme_song_html,
+            favorite_lyric=favorite_lyric_html,
             favorite_genre=matched_response.get('extracted_genre', 'N/A'),
-            favorite_band=matched_response.get('extracted_favourite_band', 'N/A')
+            favorite_band=favorite_band_html
         )
 
         match = MatchResult(
@@ -295,20 +360,25 @@ def generate_avatar():
 
         print(f"Generated prompt: {image_prompt}")
 
-        # Generate image using DALL-E
+        # Generate image using gpt with base64 response
         response = client.images.generate(
-            model="dall-e-3",
+            model="gpt-image-1",
             prompt=image_prompt,
             size="1024x1024",
-            quality="standard",
+            quality="medium",
             n=1,
         )
 
-        image_url = response.data[0].url
+        # Get base64 encoded image data
+        image_b64 = response.data[0].b64_json
+
+        # Create data URI for frontend
+        image_data_uri = f"data:image/png;base64,{image_b64}"
 
         return jsonify({
             "status": "success",
-            "image_url": image_url,
+            "image_url": image_data_uri,
+            "prompt": image_prompt
         }), 200
 
     except Exception as e:
