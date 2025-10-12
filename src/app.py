@@ -27,7 +27,7 @@ app = Flask(__name__)
 def load_survey_data():
     """Load survey data from CSV with extracted entities"""
     # Load data with extracted entities
-    entities_file = os.path.join(BASE_DIR, "../data/processed/03_music_survey_with_extracted_entities.csv")
+    entities_file = os.path.join(BASE_DIR, "./static/data/survey_embeddings.json")
     with open(entities_file, 'r', encoding='utf-8') as f:
         reader = csv.DictReader(f)
         return list(reader)
@@ -75,7 +75,7 @@ def convert_entities_to_html(text, entities_json):
 
 def load_embeddings():
     """Load embeddings data"""
-    embeddings_file = os.path.join(BASE_DIR, "../data/processed/survey_embeddings.json")
+    embeddings_file = os.path.join(BASE_DIR, "./static/data/survey_data.csv")
     if os.path.exists(embeddings_file):
         with open(embeddings_file, 'r', encoding='utf-8') as f:
             return json.load(f)
