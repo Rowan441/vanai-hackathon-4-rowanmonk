@@ -71,13 +71,26 @@
         </div>
       </div>
 
+      <!-- Fullscreen Avatar Modal -->
+      <div id="avatarFullscreenModal" class="modal hidden">
+        <div class="modal-content" style="padding: 0;">
+          <button class="modal-close" id="closeFullscreenModal" style="position: absolute; top: 20px; right: 20px; z-index: 10001;">&times;</button>
+          <img id="fullscreenAvatarImage" src="" alt="Avatar" style="max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 12px;">
+          <div style="text-align: center; margin-top: 15px; margin-bottom: 15px;">
+            <button class="btn-next id="downloadAvatarBtn" style="display: inline-flex; align-items: center; gap: 8px;">
+              <span>Download Avatar</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- User Avatar Modal -->
       <div id="userAvatarModal" class="modal hidden">
         <div class="modal-content">
           <button class="modal-close" id="closeModal">&times;</button>
           <h2>Create Your Avatar</h2>
           <p style="color: rgb(120 134 198); margin-bottom: 20px">
-            Describe your appearance in a few words (max 35 characters)
+            Describe your appearance in a few words (max 50 characters)
           </p>
 
           <input
@@ -85,10 +98,10 @@
             id="userPhysicalDescription"
             class="modal-input"
             placeholder="e.g., 'tall woman with curly hair' or 'bearded guy with glasses'"
-            maxlength="35"
+            maxlength="50"
           />
           <p style="color: #666; font-size: 0.85em; margin-bottom: 20px">
-            <span id="charCount">0</span>/35 characters
+            <span id="charCount">0</span>/50 characters
           </p>
 
           <button class="btn-next" id="generateUserAvatar">
@@ -138,7 +151,8 @@
                     id="userAvatarImage"
                     src=""
                     alt="Your AI Avatar"
-                    class="avatar-image"
+                    class="avatar-image clickable-avatar"
+                    style="cursor: pointer;"
                   />
                   <button class="recreate-avatar-btn" id="recreateUserAvatar">
                     <span>🔄 Recreate Avatar</span>
@@ -158,7 +172,8 @@
                     id="matchAvatarImage"
                     src=""
                     alt="Match's AI Avatar"
-                    class="avatar-image"
+                    class="avatar-image clickable-avatar"
+                    style="cursor: pointer;"
                   />
                 </div>
               </div>
@@ -441,16 +456,16 @@
       });
 
       // Toast notification function
-      function showToast(message, type = 'error') {
-        const toast = document.getElementById('toast');
+      function showToast(message, type = "error") {
+        const toast = document.getElementById("toast");
         toast.textContent = message;
         toast.className = `toast ${type}`;
-        toast.classList.remove('hidden');
+        toast.classList.remove("hidden");
 
         // Auto-hide after 5 seconds
         setTimeout(() => {
-          toast.classList.add('hidden');
-        }, 5000);
+          toast.classList.add("hidden");
+        }, 10000);
       }
 
       function startQuestionnaire() {
@@ -967,8 +982,6 @@
 
               // Set image and caption
               document.getElementById("matchAvatarImage").src = data.image_url;
-              document.getElementById("matchAvatarPrompt").textContent =
-                data.prompt;
             } else {
               // Show error in match avatar section
               document.getElementById("matchAvatarLoading").innerHTML =
@@ -1025,8 +1038,8 @@
           return;
         }
 
-        if (physicalDesc.length > 35) {
-          showToast("Description must be 35 characters or less", "error");
+        if (physicalDesc.length > 50) {
+          showToast("Description must be 50 characters or less", "error");
           return;
         }
 
@@ -1052,8 +1065,8 @@
           .then((response) => {
             // Check if response is ok (200-299)
             if (!response.ok) {
-              return response.json().then(err => {
-                throw new Error(err.message || 'Avatar generation failed');
+              return response.json().then((err) => {
+                throw new Error(err.message || "Avatar generation failed");
               });
             }
             return response.json();
@@ -1061,8 +1074,12 @@
           .then((data) => {
             if (data.status === "success") {
               // Hide placeholder, show avatar
-              document.getElementById("userAvatarPlaceholder").classList.add("hidden");
-              document.getElementById("userAvatarContainer").classList.remove("hidden");
+              document
+                .getElementById("userAvatarPlaceholder")
+                .classList.add("hidden");
+              document
+                .getElementById("userAvatarContainer")
+                .classList.remove("hidden");
 
               // Set image
               document.getElementById("userAvatarImage").src = data.image_url;
@@ -1072,12 +1089,17 @@
           })
           .catch((error) => {
             // Show error toast and reset to button state
-            const errorMsg = error.message || "Error generating avatar. Please try again.";
+            const errorMsg =
+              error.message || "Error generating avatar. Please try again.";
             showToast(errorMsg, "error");
 
             // Reset to initial state
-            document.getElementById("userAvatarLoading").classList.add("hidden");
-            document.getElementById("createUserAvatar").classList.remove("hidden");
+            document
+              .getElementById("userAvatarLoading")
+              .classList.add("hidden");
+            document
+              .getElementById("createUserAvatar")
+              .classList.remove("hidden");
           });
       }
 
@@ -1088,10 +1110,77 @@
       // Recreate avatar button
       document
         .getElementById("recreateUserAvatar")
-        ?.addEventListener("click", function() {
+        ?.addEventListener("click", function () {
+          // Hide the current avatar and show placeholder with button
+          document.getElementById("userAvatarContainer").classList.add("hidden");
+          document.getElementById("userAvatarPlaceholder").classList.remove("hidden");
+          document.getElementById("createUserAvatar").classList.remove("hidden");
+          document.getElementById("userAvatarLoading").classList.add("hidden");
+
           // Show modal to recreate
           document.getElementById("userAvatarModal").classList.remove("hidden");
         });
+
+      // Fullscreen avatar modal
+      function openAvatarFullscreen(imageSrc, filename) {
+        document.getElementById("fullscreenAvatarImage").src = imageSrc;
+        document.getElementById("avatarFullscreenModal").classList.remove("hidden");
+
+        // Store filename for download
+        document.getElementById("downloadAvatarBtn").dataset.filename = filename;
+      }
+
+      // Close fullscreen modal
+      document.getElementById("closeFullscreenModal")?.addEventListener("click", function() {
+        document.getElementById("avatarFullscreenModal").classList.add("hidden");
+      });
+
+      // Close on outside click
+      document.getElementById("avatarFullscreenModal")?.addEventListener("click", function(e) {
+        if (e.target.id === "avatarFullscreenModal") {
+          document.getElementById("avatarFullscreenModal").classList.add("hidden");
+        }
+      });
+
+      // Click handlers for avatar images
+      document.getElementById("userAvatarImage")?.addEventListener("click", function() {
+        if (this.src) {
+          openAvatarFullscreen(this.src, "my-avatar.png");
+        }
+      });
+
+      document.getElementById("matchAvatarImage")?.addEventListener("click", function() {
+        if (this.src) {
+          openAvatarFullscreen(this.src, "match-avatar.png");
+        }
+      });
+
+      // Download avatar
+      document.getElementById("downloadAvatarBtn")?.addEventListener("click", async function() {
+        const imageSrc = document.getElementById("fullscreenAvatarImage").src;
+        const filename = this.dataset.filename || "avatar.png";
+
+        try {
+          // Fetch the image
+          const response = await fetch(imageSrc);
+          const blob = await response.blob();
+
+          // Create download link
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+
+          // Cleanup
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+        } catch (error) {
+          console.error("Download error:", error);
+          showToast("Failed to download avatar", "error");
+        }
+      });
     </script>
   </body>
 </html>

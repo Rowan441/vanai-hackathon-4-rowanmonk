@@ -519,7 +519,7 @@ Guidelines:
                 print(f"Safety block error: {dalle_error}")
                 return jsonify({
                     'status': 'error',
-                    'message': 'Avatar generation blocked: Your description may contain copyrighted characters or inappropriate content. Please try a different description (e.g., "person with short hair" instead of character names).',
+                    'message': 'Avatar generation blocked: Your description may contain copyrighted characters or inappropriate content. Please try a different description.',
                     'error_type': 'safety_block'
                 }), 400
             else:
