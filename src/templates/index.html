@@ -77,7 +77,7 @@
           <button class="modal-close" id="closeModal">&times;</button>
           <h2>Create Your Avatar</h2>
           <p style="color: rgb(120 134 198); margin-bottom: 20px">
-            Describe your appearance in a few words (max 50 characters)
+            Describe your appearance in a few words (max 35 characters)
           </p>
 
           <input
@@ -85,10 +85,10 @@
             id="userPhysicalDescription"
             class="modal-input"
             placeholder="e.g., 'tall woman with curly hair' or 'bearded guy with glasses'"
-            maxlength="50"
+            maxlength="35"
           />
           <p style="color: #666; font-size: 0.85em; margin-bottom: 20px">
-            <span id="charCount">0</span>/50 characters
+            <span id="charCount">0</span>/35 characters
           </p>
 
           <button class="btn-next" id="generateUserAvatar">
@@ -1025,8 +1025,8 @@
           return;
         }
 
-        if (physicalDesc.length > 50) {
-          showToast("Description must be 50 characters or less", "error");
+        if (physicalDesc.length > 35) {
+          showToast("Description must be 35 characters or less", "error");
           return;
         }
 
