@@ -424,19 +424,31 @@ Guidelines:
 - sociality_level: Based on q5 and overall tone - how much they share music with others
 - favourite_genre: Extract from q3 or q6
 - favourite_band: Extract exact band/artist name from q6"""
-        print(data)
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": "You are a music preference analyzer. Return only valid JSON."},
+                {"role": "system", "content": "You are a music preference analyzer. Return only valid JSON, no markdown formatting."},
                 {"role": "user", "content": extraction_prompt}
             ],
             temperature=0.3,
             max_tokens=300
         )
-        print(response.choices[0].message.content.strip())
-        # Parse GPT response
-        extracted = json.loads(response.choices[0].message.content.strip())
+
+        # Parse GPT response - clean markdown code blocks if present
+        content = response.choices[0].message.content.strip()
+        print(f"Raw GPT response: {content}")
+
+        # Remove markdown code blocks
+        if content.startswith('```'):
+            # Remove opening ```json or ```
+            content = content.split('\n', 1)[1] if '\n' in content else content[3:]
+            # Remove closing ```
+            if content.endswith('```'):
+                content = content.rsplit('```', 1)[0]
+            content = content.strip()
+
+        print(f"Cleaned response: {content}")
+        extracted = json.loads(content)
 
         # Map to enum values
         ai_level_map = {
@@ -487,11 +499,15 @@ Guidelines:
                 n=1,
             )
 
-            image_url = image_response.data[0].url
+             # Get base64 encoded image data
+            image_b64 = image_response.data[0].b64_json
+
+            # Create data URI for frontend
+            image_data_uri = f"data:image/png;base64,{image_b64}"
 
             return jsonify({
                 'status': 'success',
-                'image_url': image_url,
+                'image_url': image_data_uri,
                 'prompt': avatar_prompt
             })
 
