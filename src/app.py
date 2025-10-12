@@ -27,7 +27,7 @@ app = Flask(__name__)
 def load_survey_data():
     """Load survey data from CSV with extracted entities"""
     # Load data with extracted entities
-    entities_file = os.path.join(BASE_DIR, "./static/data/survey_embeddings.json")
+    entities_file = os.path.join(BASE_DIR, "./static/data/survey_data.csv")
     with open(entities_file, 'r', encoding='utf-8') as f:
         reader = csv.DictReader(f)
         return list(reader)
@@ -75,7 +75,7 @@ def convert_entities_to_html(text, entities_json):
 
 def load_embeddings():
     """Load embeddings data"""
-    embeddings_file = os.path.join(BASE_DIR, "./static/data/survey_data.csv")
+    embeddings_file = os.path.join(BASE_DIR, "./static/data/survey_embeddings.json")
     if os.path.exists(embeddings_file):
         with open(embeddings_file, 'r', encoding='utf-8') as f:
             return json.load(f)
@@ -136,7 +136,6 @@ def submit_answers():
         # Load full survey data to get matched response details
         survey_data = load_survey_data()
         matched_response = next((row for row in survey_data if row['participant_id'] == best_match), None)
-
         if not matched_response:
             return jsonify({"status": "error", "message": "Match not found in survey data"}), 500
 
@@ -257,7 +256,7 @@ def analyze_match():
             "How did you first discover music you loved?": user_answers.get('q2', 'N/A'),
             "What kind of music are you into these days?": user_answers.get('q3', 'N/A'),
             "Real talk - how do you feel about AI making music": user_answers.get('q4', 'N/A'),
-            "In what situations are you listening music the most?": user_answers.get('q5', 'N/A'),
+            "In what situations are you listening to music the most?": user_answers.get('q5', 'N/A'),
             "What is your absolute favourite band / artist and what do you love about them??": user_answers.get('q6', 'N/A')
         }
 

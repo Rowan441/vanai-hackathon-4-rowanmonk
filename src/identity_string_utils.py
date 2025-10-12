@@ -117,7 +117,7 @@ def create_user_identity_string(answers):
 
     parts.append(f"Real talk - how do you feel about AI making music?: {answers.get('q4', '')}")
 
-    parts.append(f"In what situations are you listening music the most?: {answers.get('q5', '')}")
+    parts.append(f"In what situations are you listening to music the most?: {answers.get('q5', '')}")
 
     parts.append(f"What is your absolute favourite band / artist and what do you love about them?: {answers.get('q6', '')}")
 
