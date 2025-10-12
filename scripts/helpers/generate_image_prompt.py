@@ -150,7 +150,7 @@ def generate_avatar_prompt(physical_desc, ai_level, intensity_level, sociality_l
     if pd.notna(favourite_genre):
         genre_lower = str(favourite_genre).lower()
         if "other" not in genre_lower:
-            wearing += genre_lower + " fashion. "
+            wearing += genre_lower + " music fashion. "
         else:
             wearing += "casual music fan attire. "
     else:
@@ -186,7 +186,7 @@ def generate_avatar_prompt(physical_desc, ai_level, intensity_level, sociality_l
     else:
         prompt += "Classic vintage aesthetic."
 
-    prompt += "Highly detailed digital illustration, character portrait, music-themed."
+    prompt += "detailed digital illustration, music-themed."
 
     return prompt
 

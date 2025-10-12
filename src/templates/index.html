@@ -13,6 +13,9 @@
     <div class="background"></div>
     <canvas id="particles"></canvas>
 
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden"></div>
+
     <div class="container">
       <div class="header">
         <h1>🎵 MUSIC TASTE MATCHER</h1>
@@ -73,23 +76,24 @@
         <div class="modal-content">
           <button class="modal-close" id="closeModal">&times;</button>
           <h2>Create Your Avatar</h2>
-          <p style="color: #312020; margin-bottom: 20px;">Enter a participant ID to generate your avatar</p>
+          <p style="color: rgb(120 134 198); margin-bottom: 20px">
+            Describe your appearance in a few words (max 50 characters)
+          </p>
 
           <input
             type="text"
-            id="userParticipantId"
+            id="userPhysicalDescription"
             class="modal-input"
-            placeholder="Enter participant ID..."
+            placeholder="e.g., 'tall woman with curly hair' or 'bearded guy with glasses'"
+            maxlength="50"
           />
+          <p style="color: #666; font-size: 0.85em; margin-bottom: 20px">
+            <span id="charCount">0</span>/50 characters
+          </p>
 
-          <button class="btn-primary" id="generateUserAvatar">
+          <button class="btn-next" id="generateUserAvatar">
             Generate Avatar
           </button>
-
-          <div id="userAvatarModalLoading" class="hidden" style="margin-top: 20px;">
-            <div class="spinner"></div>
-            <p style="color: #999; margin-top: 10px;">Generating your avatar...</p>
-          </div>
         </div>
       </div>
 
@@ -124,9 +128,21 @@
                     <span class="avatar-plus">+</span>
                     <span>Create Your Avatar</span>
                   </button>
+                  <div class="avatar-loading hidden" id="userAvatarLoading">
+                    <div class="spinner"></div>
+                    <p>Generating avatar...</p>
+                  </div>
                 </div>
                 <div class="avatar-container hidden" id="userAvatarContainer">
-                  <img id="userAvatarImage" src="" alt="Your AI Avatar" class="avatar-image">
+                  <img
+                    id="userAvatarImage"
+                    src=""
+                    alt="Your AI Avatar"
+                    class="avatar-image"
+                  />
+                  <button class="recreate-avatar-btn" id="recreateUserAvatar">
+                    <span>🔄 Recreate Avatar</span>
+                  </button>
                 </div>
               </div>
 
@@ -138,7 +154,12 @@
                   <p>Generating avatar...</p>
                 </div>
                 <div class="avatar-container hidden" id="matchAvatarContainer">
-                  <img id="matchAvatarImage" src="" alt="Match's AI Avatar" class="avatar-image">
+                  <img
+                    id="matchAvatarImage"
+                    src=""
+                    alt="Match's AI Avatar"
+                    class="avatar-image"
+                  />
                 </div>
               </div>
             </div>
@@ -330,10 +351,10 @@
         {
           id: 6,
           question:
-            "How do you share music with others? Or are you keeping it to yourself?",
+            "Last question, what is your absolute favourite band / artist and what do you love about them?",
           placeholder:
-            "e.g., 'Always sharing my playlists' or 'It's my private thing'",
-          hint: "💡 How social are you with your taste?",
+            "e.g., 'Radiohead - their creativity never stops' or 'Taylor Swift - I grew up with her'",
+          hint: "💡 Who's your #1 and why do they mean so much to you?",
         },
       ];
 
@@ -418,6 +439,19 @@
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
       });
+
+      // Toast notification function
+      function showToast(message, type = 'error') {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = `toast ${type}`;
+        toast.classList.remove('hidden');
+
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+          toast.classList.add('hidden');
+        }, 5000);
+      }
 
       function startQuestionnaire() {
         document.getElementById("welcomeScreen").classList.add("hidden");
@@ -610,13 +644,13 @@
 
           // Friend shares (single value with highlighting)
           const favorite_genreEl = document.getElementById("matchGenre");
-          favorite_genreEl.innerHTML = profile.favorite_genre || "N/A";
+          favorite_genreEl.textContent = profile.favorite_genre || "N/A";
           if (highlightedFields.has("matchGenre")) {
             favorite_genreEl.classList.add("highlighted-single-value");
           }
           // Friend shares (single value with highlighting)
           const favorite_bandEl = document.getElementById("matchFavBand");
-          favorite_bandEl.innerHTML = profile.favorite_band || "N/A";
+          favorite_bandEl.textContent = profile.favorite_band || "N/A";
           if (highlightedFields.has("matchFavBand")) {
             favorite_bandEl.classList.add("highlighted-single-value");
           }
@@ -908,7 +942,9 @@
 
       function generateAvatar(participantId) {
         // Show loading state for match avatar
-        document.getElementById("matchAvatarLoading").classList.remove("hidden");
+        document
+          .getElementById("matchAvatarLoading")
+          .classList.remove("hidden");
         document.getElementById("matchAvatarContainer").classList.add("hidden");
 
         fetch("/generate_avatar", {
@@ -922,85 +958,140 @@
           .then((data) => {
             if (data.status === "success") {
               // Hide loading, show match avatar
-              document.getElementById("matchAvatarLoading").classList.add("hidden");
-              document.getElementById("matchAvatarContainer").classList.remove("hidden");
+              document
+                .getElementById("matchAvatarLoading")
+                .classList.add("hidden");
+              document
+                .getElementById("matchAvatarContainer")
+                .classList.remove("hidden");
 
               // Set image and caption
               document.getElementById("matchAvatarImage").src = data.image_url;
-              document.getElementById("matchAvatarPrompt").textContent = data.prompt;
+              document.getElementById("matchAvatarPrompt").textContent =
+                data.prompt;
             } else {
               // Show error in match avatar section
-              document.getElementById("matchAvatarLoading").innerHTML = '<p style="color: #ff6b6b;">Failed to generate avatar</p>';
+              document.getElementById("matchAvatarLoading").innerHTML =
+                '<p style="color: #ff6b6b;">Failed to generate avatar</p>';
               console.error("Avatar generation failed:", data.message);
             }
           })
           .catch((error) => {
             // Show error in match avatar section
-            document.getElementById("matchAvatarLoading").innerHTML = '<p style="color: #ff6b6b;">Error generating avatar</p>';
+            document.getElementById("matchAvatarLoading").innerHTML =
+              '<p style="color: #ff6b6b;">Error generating avatar</p>';
             console.error("Error generating avatar:", error);
           });
       }
 
       // User avatar creation modal handlers
-      document.getElementById("createUserAvatar")?.addEventListener("click", function() {
-        document.getElementById("userAvatarModal").classList.remove("hidden");
-      });
+      document
+        .getElementById("createUserAvatar")
+        ?.addEventListener("click", function () {
+          document.getElementById("userAvatarModal").classList.remove("hidden");
+        });
 
-      document.getElementById("closeModal")?.addEventListener("click", function() {
-        document.getElementById("userAvatarModal").classList.add("hidden");
-      });
+      document
+        .getElementById("closeModal")
+        ?.addEventListener("click", function () {
+          document.getElementById("userAvatarModal").classList.add("hidden");
+        });
 
       // Close modal on outside click
-      document.getElementById("userAvatarModal")?.addEventListener("click", function(e) {
-        if (e.target.id === "userAvatarModal") {
-          document.getElementById("userAvatarModal").classList.add("hidden");
-        }
-      });
+      document
+        .getElementById("userAvatarModal")
+        ?.addEventListener("click", function (e) {
+          if (e.target.id === "userAvatarModal") {
+            document.getElementById("userAvatarModal").classList.add("hidden");
+          }
+        });
+
+      // Character counter for physical description
+      document
+        .getElementById("userPhysicalDescription")
+        ?.addEventListener("input", function () {
+          const length = this.value.length;
+          document.getElementById("charCount").textContent = length;
+        });
 
       // Generate user avatar
-      document.getElementById("generateUserAvatar")?.addEventListener("click", function() {
-        const participantId = document.getElementById("userParticipantId").value.trim();
+      function generateUserAvatarFromModal() {
+        const physicalDesc = document
+          .getElementById("userPhysicalDescription")
+          .value.trim();
 
-        if (!participantId) {
-          alert("Please enter a participant ID");
+        if (!physicalDesc) {
+          showToast("Please describe your appearance", "error");
           return;
         }
 
-        // Show loading
-        document.getElementById("userAvatarModalLoading").classList.remove("hidden");
+        if (physicalDesc.length > 50) {
+          showToast("Description must be 50 characters or less", "error");
+          return;
+        }
 
-        fetch("/generate_avatar", {
+        // Close modal immediately
+        document.getElementById("userAvatarModal").classList.add("hidden");
+        document.getElementById("userPhysicalDescription").value = "";
+        document.getElementById("charCount").textContent = "0";
+
+        // Hide button, show loading in placeholder
+        document.getElementById("createUserAvatar").classList.add("hidden");
+        document.getElementById("userAvatarLoading").classList.remove("hidden");
+
+        fetch("/generate_user_avatar", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ participant_id: participantId }),
+          body: JSON.stringify({
+            physical_description: physicalDesc,
+            user_answers: answers,
+          }),
         })
-          .then((response) => response.json())
+          .then((response) => {
+            // Check if response is ok (200-299)
+            if (!response.ok) {
+              return response.json().then(err => {
+                throw new Error(err.message || 'Avatar generation failed');
+              });
+            }
+            return response.json();
+          })
           .then((data) => {
             if (data.status === "success") {
-              // Hide placeholder, show user avatar
+              // Hide placeholder, show avatar
               document.getElementById("userAvatarPlaceholder").classList.add("hidden");
               document.getElementById("userAvatarContainer").classList.remove("hidden");
 
-              // Set image and caption
+              // Set image
               document.getElementById("userAvatarImage").src = data.image_url;
-              document.getElementById("userAvatarPrompt").textContent = data.prompt;
 
-              // Close modal
-              document.getElementById("userAvatarModal").classList.add("hidden");
-              document.getElementById("userAvatarModalLoading").classList.add("hidden");
-              document.getElementById("userParticipantId").value = "";
-            } else {
-              alert("Error: " + data.message);
-              document.getElementById("userAvatarModalLoading").classList.add("hidden");
+              showToast("Avatar created successfully! 🎉", "success");
             }
           })
           .catch((error) => {
-            alert("Error generating avatar: " + error);
-            document.getElementById("userAvatarModalLoading").classList.add("hidden");
+            // Show error toast and reset to button state
+            const errorMsg = error.message || "Error generating avatar. Please try again.";
+            showToast(errorMsg, "error");
+
+            // Reset to initial state
+            document.getElementById("userAvatarLoading").classList.add("hidden");
+            document.getElementById("createUserAvatar").classList.remove("hidden");
           });
-      });
+      }
+
+      document
+        .getElementById("generateUserAvatar")
+        ?.addEventListener("click", generateUserAvatarFromModal);
+
+      // Recreate avatar button
+      document
+        .getElementById("recreateUserAvatar")
+        ?.addEventListener("click", function() {
+          // Show modal to recreate
+          document.getElementById("userAvatarModal").classList.remove("hidden");
+        });
     </script>
   </body>
 </html>

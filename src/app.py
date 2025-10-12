@@ -8,8 +8,10 @@ from collections import Counter
 from openai import OpenAI
 import re
 
+
 # Add scripts to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'scripts'))
+from helpers.generate_image_prompt import AISpectrumLevel, IntensityLevel, SocialityLevel, generate_avatar_prompt
 from helpers.identity_string_utils import create_user_identity_string
 from helpers.generate_image_prompt import create_image_prompt_from_survey
 from models import RespondentProfile, MatchResult, QuestionnaireResponse
@@ -205,9 +207,9 @@ def submit_answers():
             relationship_with_music=matched_response.get('Q1_Relationship_with_music', 'N/A'),
             discovering_music=matched_response.get('Q2_Discovering_music', 'N/A'),
             first_song_artist_love=first_artist_html,
-            format_change=matched_response.get('Q4_Music_format_changes', 'N/A'),
-            format_change_memory=matched_response.get('Q5_Music_format_change_impact', 'N/A'),
-            format_change_feelings=matched_response.get('Q6_Music_format_change_feelings', 'N/A'),
+            # format_change=matched_response.get('Q4_Music_format_changes', 'N/A'),
+            # format_change_memory=matched_response.get('Q5_Music_format_change_impact', 'N/A'),
+            # format_change_feelings=matched_response.get('Q6_Music_format_change_feelings', 'N/A'),
             discovery_methods=', '.join(discovery_methods) if discovery_methods else 'N/A',
             listening_contexts=', '.join(listening_contexts) if listening_contexts else 'N/A',
             current_preference=matched_response.get('Q9_Music_preference_these_days', 'N/A'),
@@ -256,7 +258,7 @@ def analyze_match():
             "What kind of music are you into these days?": user_answers.get('q3', 'N/A'),
             "Real talk - how do you feel about AI making music": user_answers.get('q4', 'N/A'),
             "In what situations are you listening music the most?": user_answers.get('q5', 'N/A'),
-            "How do you share music with others? Or are you keeping it to yourself?": user_answers.get('q6', 'N/A')
+            "What is your absolute favourite band / artist and what do you love about them??": user_answers.get('q6', 'N/A')
         }
 
         import json as json_lib
@@ -388,6 +390,133 @@ def generate_avatar():
             "message": str(e)
         }), 400
 
+
+@app.route('/generate_user_avatar', methods=["POST"])
+def generate_user_avatar():
+    try:
+        data = request.get_json()
+        physical_description = data.get('physical_description')
+        user_answers = data.get('user_answers', {})
+
+        # Use GPT to extract structured attributes from user responses
+        extraction_prompt = f"""Analyze these music questionnaire responses and extract the following attributes:
+
+User Responses:
+- Q1: What's your relationship with music like?: {user_answers.get('q1', 'N/A')}
+- Q2: How did you first discover music you loved?: {user_answers.get('q2', 'N/A')}
+- Q3: What kind of music are you into these days?: {user_answers.get('q3', 'N/A')}
+- Q4: Real talk - how do you feel about AI making music?: {user_answers.get('q4', 'N/A')}
+- Q5: In what situations are you listening to music the most?: {user_answers.get('q5', 'N/A')}
+- Q6: What is your absolute favourite band / artist and what do you love about them?: {user_answers.get('q6', 'N/A')}
+
+Extract and return ONLY a JSON object with these fields:
+{{
+    "ai_level": "embracer" | "curious" | "uncertain" | "rejector",
+    "intensity_level": "obsessed" | "engaged" | "casual" | "minimal",
+    "sociality_level": "active_curator" | "social_listener" | "casual_sharer" | "hoarder",
+    "favourite_genre": "rock" | "pop" | "hip hop" | "indie" | "electronic" | etc. (or null if unclear),
+    "favourite_band": "Band/Artist Name" (extract from q6, or null if not mentioned)
+}}
+
+Guidelines:
+- ai_level: Based on q4 - how they feel about AI music
+- intensity_level: Based on q1 and q5 - how much music is part of their life
+- sociality_level: Based on q5 and overall tone - how much they share music with others
+- favourite_genre: Extract from q3 or q6
+- favourite_band: Extract exact band/artist name from q6"""
+        print(data)
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": "You are a music preference analyzer. Return only valid JSON."},
+                {"role": "user", "content": extraction_prompt}
+            ],
+            temperature=0.3,
+            max_tokens=300
+        )
+        print(response.choices[0].message.content.strip())
+        # Parse GPT response
+        extracted = json.loads(response.choices[0].message.content.strip())
+
+        # Map to enum values
+        ai_level_map = {
+            "embracer": AISpectrumLevel.EMBRACER,
+            "curious": AISpectrumLevel.CURIOUS,
+            "uncertain": AISpectrumLevel.UNCERTAIN,
+            "rejector": AISpectrumLevel.REJECTOR
+        }
+
+        intensity_level_map = {
+            "obsessed": IntensityLevel.OBSESSED,
+            "engaged": IntensityLevel.ENGAGED,
+            "casual": IntensityLevel.CASUAL,
+            "minimal": IntensityLevel.MINIMAL
+        }
+
+        sociality_level_map = {
+            "active_curator": SocialityLevel.ACTIVE_CURATOR,
+            "social_listener": SocialityLevel.SOCIAL_LISTENER,
+            "casual_sharer": SocialityLevel.CASUAL_SHARER,
+            "hoarder": SocialityLevel.HOARDER
+        }
+
+        ai_level = ai_level_map.get(extracted.get('ai_level', 'uncertain'), AISpectrumLevel.UNCERTAIN)
+        intensity_level = intensity_level_map.get(extracted.get('intensity_level', 'casual'), IntensityLevel.CASUAL)
+        sociality_level = sociality_level_map.get(extracted.get('sociality_level', 'casual_sharer'), SocialityLevel.CASUAL_SHARER)
+        favourite_genre = extracted.get('favourite_genre')
+        favourite_band = extracted.get('favourite_band')
+
+        # Generate Musical Avatar Image Prompt using user's physical description
+        avatar_prompt = generate_avatar_prompt(
+            physical_desc=physical_description,
+            ai_level=ai_level,
+            intensity_level=intensity_level,
+            sociality_level=sociality_level,
+            favourite_genre=favourite_genre,
+            favourite_band=favourite_band
+        )
+
+        print(f"Generated user avatar prompt: {avatar_prompt}")
+
+        try:
+            image_response = client.images.generate(
+                model="gpt-image-1",
+                prompt=avatar_prompt,
+                size="1024x1024",
+                quality="medium",
+                n=1,
+            )
+
+            image_url = image_response.data[0].url
+
+            return jsonify({
+                'status': 'success',
+                'image_url': image_url,
+                'prompt': avatar_prompt
+            })
+
+        except Exception as dalle_error:
+            error_str = str(dalle_error)
+
+            # Check if it's a safety/moderation error
+            if 'safety system' in error_str.lower() or 'moderation_blocked' in error_str.lower() or 'content_policy' in error_str.lower():
+                print(f"Safety block error: {dalle_error}")
+                return jsonify({
+                    'status': 'error',
+                    'message': 'Avatar generation blocked: Your description may contain copyrighted characters or inappropriate content. Please try a different description (e.g., "person with short hair" instead of character names).',
+                    'error_type': 'safety_block'
+                }), 400
+            else:
+                # Other DALL-E errors
+                print(f"DALL-E error: {dalle_error}")
+                raise dalle_error
+
+    except Exception as e:
+        print(f"Error generating user avatar: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': 'Unable to generate avatar. Please try again or contact support if the issue persists.'
+        }), 500
 
 @app.route('/api/stats')
 def get_stats():
