@@ -91,7 +91,7 @@ def generate_physical_description(ethnicity, age, gender):
             parts.append("person in their late 20s-early 30s")
         elif age_int < 45:
             parts.append("person in their late 30s-early 40s")
-        elif age_int < 55:
+        elif age_int < 60:
             parts.append("middle-aged person")
         else:
             parts.append("mature adult")
@@ -159,14 +159,41 @@ def generate_avatar_prompt(physical_desc, ai_level, intensity_level, sociality_l
     prompt += wearing
 
     # Intensity influences energy and expression
+    import random
     if intensity_level == IntensityLevel.OBSESSED:
-        prompt += "Passionate intense expression, lots of music accessories. "
+        expressions = [
+            "Passionate intense expression, surrounded by concert tickets and music memorabilia. ",
+            "Ecstatic energy with multiple instruments and vinyl records scattered around. ",
+            "Electric intensity in their eyes, wearing headphones. ",
+            "Fervent music lover aura with festival wristbands and setlists as accessories. "
+        ]
+        prompt += random.choice(expressions)
     elif intensity_level == IntensityLevel.ENGAGED:
-        prompt += "Enthusiastic expression, vibing with the music. "
+        expressions = [
+            "Enthusiastic expression, head nodding to the beat with wireless headphones. ",
+            "Animated and connected to the music, holding their phone with playlists visible. ",
+            "Vibing with genuine enjoyment, air drumming or finger tapping along. ",
+            "Energetic presence dancing subtly, with earbuds and a smile. ",
+            "Engaged and immersed in the sound, eyes closed and feeling the rhythm. "
+        ]
+        prompt += random.choice(expressions)
     elif intensity_level == IntensityLevel.CASUAL:
-        prompt += "Relaxed expression. Casually enjoying the music. "
-    else:
-        prompt += "Understated expression. "
+        expressions = [
+            "Relaxed expression, casually enjoying background music with one earbud in. ",
+            "Chill demeanor with a contented smile, music as pleasant company. ",
+            "Easygoing vibe, scrolling through songs with a laid-back posture. ",
+            "Comfortable and unhurried, music playing softly in the background. ",
+            "Mellow presence appreciating the tunes without overwhelming focus. "
+        ]
+        prompt += random.choice(expressions)
+    else:  # MINIMAL
+        expressions = [
+            "Understated expression, barely acknowledging the music in the background. ",
+            "Neutral demeanor with music as an afterthought, focus elsewhere. ",
+            "Distant relationship to sound, minimal engagement or accessories. ",
+            "Low-key presence with music playing faintly, no visible enthusiasm. ",
+        ]
+        prompt += random.choice(expressions)
 
     # # Sociality influences background/setting - number of people
     # if sociality_level == SocialityLevel.ACTIVE_CURATOR:
@@ -179,14 +206,39 @@ def generate_avatar_prompt(physical_desc, ai_level, intensity_level, sociality_l
     #     prompt += "Background: Alone "
 
     # AI attitude influences aesthetic style/lighting
+    import random
     if ai_level == AISpectrumLevel.EMBRACER:
-        prompt += "Futuristic digital aesthetic. "
-    elif ai_level == AISpectrumLevel.CURIOUS or ai_level == AISpectrumLevel.UNCERTAIN:
-        prompt += "Modern aesthetic. "
-    else:
-        prompt += "Classic vintage aesthetic."
+        aesthetics = [
+            "Neon-lit cyberpunk aesthetic with holographic elements and digital glow effects. ",
+            "Sleek futuristic style with chrome accents and LED lighting. ",
+            "High-tech sci-fi atmosphere with glowing circuit patterns and digital particles. ",
+            "Ultra-modern space-age look with iridescent surfaces and laser light effects. ",
+        ]
+        prompt += random.choice(aesthetics)
+    elif ai_level == AISpectrumLevel.CURIOUS:
+        aesthetics = [
+            "Contemporary urban aesthetic with clean lines and studio lighting. ",
+            "Modern minimalist style with soft neon accents and gradient backgrounds. ",
+            "Polished present-day look with subtle tech elements and balanced lighting. ",
+            "Sleek modern design with geometric patterns and ambient lighting. ",
+            "Fresh contemporary vibe with digital-meets-analog aesthetic. "
+        ]
+        prompt += random.choice(aesthetics)
+    else: # REJECTOR or UNCERTAIN
+        aesthetics = [
+            "Neutral balanced aesthetic blending retro and modern elements. ",
+            "Timeless classic style with natural lighting and muted tones. ",
+            "Understated contemporary look with subtle vintage touches. ",
+            "Transitional aesthetic mixing analog warmth with digital clarity. ",
+            "Balanced mid-century modern style with soft even lighting. "
+            "Classic analog aesthetic with warm vintage film grain and natural lighting. ",
+            "Retro vinyl era style with authentic textures and nostalgic color grading. ",
+            "Timeless old-school look with tape deck vibes and warm tungsten lighting. ",
+            "Authentic vintage atmosphere with cassette-era aesthetics and film photography feel. ",
+        ]
+        prompt += random.choice(aesthetics)
 
-    prompt += "detailed digital illustration, music-themed."
+    prompt += "detailed digital illustration, music-themed, non-photorealistic."
 
     return prompt
 
@@ -211,10 +263,7 @@ def calculate_ai_spectrum(data):
     q10_answer = q10_map.get(data['Q10_Songs_by_AI'])
     q11_answer = q11_map.get(data['Q11_Use_of_dead_artists_voice_feelings'])
     
-    if (q10_answer == AISpectrumLevel.EMBRACER):
-        ai_level = AISpectrumLevel.EMBRACER
-    else:
-        ai_level = AISpectrumLevel(max(q10_answer.value, q11_answer.value))
+    ai_level = AISpectrumLevel(max(q10_answer.value, q11_answer.value))
     return ai_level, ai_level.value/3.0
 
 def calculate_intensity(data):
