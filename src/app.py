@@ -11,9 +11,9 @@ import re
 
 # Add scripts to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'scripts'))
-from helpers.generate_image_prompt import AISpectrumLevel, IntensityLevel, SocialityLevel, generate_avatar_prompt
-from helpers.identity_string_utils import create_user_identity_string
-from helpers.generate_image_prompt import create_image_prompt_from_survey
+from generate_image_prompt import AISpectrumLevel, IntensityLevel, SocialityLevel, generate_avatar_prompt
+from identity_string_utils import create_user_identity_string
+from generate_image_prompt import create_image_prompt_from_survey
 from models import RespondentProfile, MatchResult, QuestionnaireResponse
 
 # Initialize OpenAI client
