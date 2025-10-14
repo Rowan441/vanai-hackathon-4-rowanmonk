@@ -1,208 +1,92 @@
-# Vancouver AI Hackathon Round 4: The Soundtrack of Us
+# Music Taste Matcher
 
-## 🎵 What This Is
-A dataset with **1,000+ survey responses** about how people discover music, what formats they use, and how they feel about AI-generated music. Perfect for creating data visualizations, apps, or insights about music and technology.
+**Find Your Sonic Twin**
 
-## 🚀 New to GitHub? Start Here
+A Van AI Hackathon Round 4 Project
 
-### Getting the Data (3 Easy Ways)
+## Team Members
 
-**Option 1: Download ZIP (Easiest)**
-1. Click the green "Code" button at the top of this page
-2. Click "Download ZIP"
-3. Unzip the file on your computer
-4. Open `data/raw/music_survey_data.csv` in Excel, Google Sheets, or any data tool
+- Rowan Monk
 
-**Option 2: Clone with Git**
-```bash
-git clone https://github.com/WalksWithASwagger/vanai-hackathon-004.git
-cd vanai-hackathon-004
-```
+## Project Overview
 
-**Option 3: Individual Files**
-- Right-click any file → "Save As" to download individual files
-- Main dataset: `data/raw/music_survey_data.csv`
+Music Taste Matcher is an AI-powered web application that connects people through their unique relationship with music. We surveyed hundreds of real people about their musical journey from their first beloved artist to their guilty pleasures, from how they discover new music to the lyrics that changed them. The result is a rich dataset of authentic music stories waiting to be discovered.
 
-## What's In The Dataset
+When users answer six thoughtfully crafted questions about their own musical identity, our application uses OpenAI's text embedding models to perform semantic matching, finding the survey respondent whose musical DNA most closely mirrors theirs. This isn't just about matching favorite genres or artists it's about matching the deeper relationship people have with music: how they discover it, when they listen, how intensely they engage, and how they share it with others.
 
-### The Data
-- **1,000+ complete responses** from music listeners across Canada
-- **19 core questions** covering music discovery, format evolution, and AI attitudes
-- **Rich demographics**: Age, location, education, income, household composition
-- **3,000+ text responses** with sentiment analysis scores
-- **Geographic distribution**: Ontario (40%+), BC (20%+), Alberta, Quebec, and more
+The experience goes beyond the match itself. Users discover their twin's complete music profile, enriched with Spotify links to explore their favorite artists and songs directly. Our AI analysis provides personalized insights explaining why they were paired together, highlighting genuine connections in their responses. To visualize these musical identities, we generate custom illustrated avatars for both the user and their match, with artistic styles that reflect their attitudes toward AI, music intensity levels, and social sharing behaviors.
 
-### Question Categories
-- **Music Discovery**: How people find new music (radio, streaming, social media, etc.)
-- **Format Evolution**: Personal experiences with vinyl, cassettes, CDs, downloads, streaming
-- **Listening Habits**: When and how people consume music in daily life
-- **AI Music Attitudes**: Responses to AI-generated music and voice cloning
-- **Social Sharing**: How people share music and their guilty pleasures
-- **Personal Connection**: Life theme songs and meaningful lyrics
-
-## 💡 Quick Start Ideas
-
-### Just Want to Browse?
-- Open `data/raw/music_survey_data.csv` in Excel or Google Sheets
-- Check out `data/raw/survey_questions.txt` to see what was asked
-- Run `python scripts/explore_data.py` for a quick data overview
-
-### Ready to Code?
-
-**Python Users**
-```python
-import pandas as pd
-
-# Load the data
-df = pd.read_csv('data/raw/music_survey_data.csv')
-print(f"Total responses: {len(df)}")
-
-# Check out some life theme songs
-print(df['Q18_Life_theme_song'].dropna().head())
-```
-
-**R Users**
-```r
-library(tidyverse)
-music_survey <- read_csv("data/raw/music_survey_data.csv")
-glimpse(music_survey)
-```
-
-**Excel/Google Sheets Users**
-Just open the CSV file - no coding required!
-
-## Data Structure
-
-### Key Columns
-- `Q1_Relationship_with_music`: Music engagement level
-- `Q2_Discovering_music`: Primary music discovery method
-- `Q4_Music_format_changes`: Experience with format transitions
-- `Q7_New_music_discover_*`: Multiple discovery methods
-- `Q8_Music_listen_time_GRID_*`: Listening habits by activity
-- `Q10_Songs_by_AI`: Attitudes toward AI-generated music
-- `Q11_Use_of_dead_artists_voice_feelings`: AI voice cloning opinions
-- `Q12_Music_bingo_*`: Music-related behaviors
-- `Q13_Share_the_music_you_love_*`: Music sharing methods
-- `Q15_Music_guilty_pleasure`: Musical guilty pleasures
-- `Q18_Life_theme_song`: Personal theme songs
-- `Q19_Lyric_that_stuck_with_you`: Meaningful lyrics
-
-### Demographics
-- `AgeGroup_Broad`: 18-34, 35-54, 55+
-- `Province`: Geographic distribution
-- `Education`: Education level
-- `HH_Income_Fine_23`: Household income
-- `Gender`: Gender distribution
-
-### Sentiment Analysis
-- Sentiment scores included for open-ended responses
-- Polarity and subjectivity measures available
-- Percentage scores for emotional content
-
-## 📁 What's in This Repository
-
-```
-vanai-hackathon-004/
-├── 📄 README.md                        # You are here!
-├── 📊 data/
-│   ├── raw/
-│   │   ├── music_survey_data.csv      # 🎯 THE MAIN DATASET (start here!)
-│   │   └── survey_questions.txt       # What questions were asked
-│   ├── processed/                     # Your cleaned data goes here
-│   └── analysis/                      # Your analysis results go here
-├── 🔧 scripts/
-│   ├── explore_data.py                # Quick data peek script
-│   └── data_preprocessing.py          # Data cleaning helpers
-├── 💻 src/                            # Your code goes here
-├── 🎯 submissions/                    # Hackathon projects go here
-└── 📚 docs/                          # Extra documentation
-```
-
-**The Important Files:**
-- `data/raw/music_survey_data.csv` - This is your main dataset!
-- `data/raw/survey_questions.txt` - Explains what each question means
-- `scripts/explore_data.py` - Run this for a quick data overview
-
-## 🔧 Helpful Scripts
-
-### Want a Quick Data Overview?
-```bash
-python scripts/explore_data.py
-```
-This shows you basic info about the dataset - how many responses, what columns exist, sample data, etc.
-
-### Need to Clean the Data?
-```bash
-python scripts/data_preprocessing.py
-```
-This helps clean up responses, handle missing data, and prepare data for analysis.
-
-## Hackathon Challenge
-
-Using this dataset, create an experience that's **interactive, visual, or narrative-driven**. The goal is to transform raw survey data into compelling insights about music, technology, and human behavior.
-
-### Submission Requirements
-- **Format Freedom**: Visual display, interactive demo, live performance, or unconventional approach
-- **Bite-Sized Impact**: Engaging experience within 2-5 minutes
-- **Technical Details**: Include all software, hardware, and instructions needed
-- **Data Grounding**: Story must be grounded in the actual data
-- **AI Integration**: Incorporate AI tools to enhance your narrative
-
-### Judging Criteria
-- **Creativity & Innovation (25%)**: Fresh, original approach
-- **Clarity & Effectiveness (25%)**: Clear communication of insights
-- **Engagement & Impact (20%)**: Compelling and memorable experience
-- **Technical Execution (20%)**: Well-implemented solution
-- **Community Value (10%)**: Open-source tools, shared methodologies
-
-## 📅 Important Dates
-- **Dataset Released**: September 15, 2025
-- **Submission Deadline**: October 15, 2025
-- **Award Date**: October 29, 2025
-
-## 📦 Submission Requirements
-
-**Your final folder of deliverables should include:**
-
-- **PDF Document** containing:
-  - Team member information (names, contact information)
-  - Project title and description (max 300 words)
-  - Brief explanation of your technical approach and tools used (max 300 words)
-- **Link to working prototype/demo**, or the file itself
-- **3-minute video walkthrough** (strongly encouraged, especially for interactive projects)
-
-## 🛠️ Toolkit
-
-Suggested tools, not requirements:
-
-- **Cline, RooCode, Cursor, Claude Code** - AI copilots to jam with
-- **v0 by Vercel, Lovable** - interfaces at speed
-- **Udio, Suno, ElevenLabs** - sound experiments
-- **Pika, Runway, Google Veo** - video riffs
-- **p5.js, Processing, Observable** - data paintings
-- **Seedream 4 (ByteDance), Midjourney, Stable Diffusion** - visual generation
-
-## ❓ Need Help?
-
-### New to Data Analysis?
-- **Excel/Google Sheets**: Just open the CSV file and start exploring
-- **Python**: Install pandas (`pip install pandas`) and use the code examples above
-- **R**: Install tidyverse (`install.packages("tidyverse")`) and use the R code above
-
-### New to GitHub?
-- **Download**: Click green "Code" button → "Download ZIP"
-- **Questions**: Check the Issues tab or create a new issue
-- **Sharing**: Fork this repository to make your own copy
-
-### Getting Stuck?
-- Look at `data/raw/survey_questions.txt` to understand the questions
-- Run `python scripts/explore_data.py` to see what's in the data
-- Check the Issues tab for common questions
-
-## 📋 License & Usage
-
-This dataset is provided for hackathon use. Please respect participant privacy and use data responsibly.
+Music Taste Matcher transforms abstract survey data into meaningful human connections, proving that our relationship with music is as unique as our fingerprints and just as recognizable when you know what to look for.
 
 ---
 
-**🎯 Ready to start?** Download the data and explore 1,000+ music stories from across Canada!
+## Technical Implementation
+
+### Architecture & Stack
+
+The application is built with a Flask backend and vanilla JavaScript frontend, prioritizing rapid development and straightforward deployment. The backend handles API orchestration, embeddings generation, and real-time avatar creation, while the frontend provides an engaging, progressive questionnaire experience with smooth animations and responsive design.
+
+### AI & Matching System
+
+At the core is OpenAI's `text-embedding-3-small` model, which converts user responses into high-dimensional vector representations. We pre-computed embeddings for all survey respondents, enabling real-time matching via cosine similarity search. The identity string construction intelligently synthesizes user responses into a coherent narrative that captures both explicit answers and implicit preferences.
+
+Our avatar generation system uses DALL-E (gpt-image-1) with dynamically constructed prompts. We map survey responses to three key dimensions: AI attitude spectrum (embracer to rejector), music intensity (obsessed to minimal), and social sharing behavior (active curator to hoarder). Each dimension influences different aspects of the generated avatar aesthetic style and lighting for AI attitude, expression and accessories for intensity, and background elements for sociality. Prompt variations are randomized within categories to ensure visual diversity while maintaining thematic consistency.
+
+### Data Pipeline & Entity Extraction
+
+The data processing pipeline consists of multiple scripts that progressively enrich the survey data. We use GPT-4o-mini for music entity extraction, identifying songs, artists, and albums in free-text responses through inline annotation with JSON metadata. The extraction system includes robust validation with retry logic, ensuring text fidelity while enabling Spotify URL enrichment. Entity annotations are converted to clickable Spotify links in the UI, allowing users to immediately explore their match's musical taste.
+
+The matching insights feature employs a secondary LLM call that compares user responses with their match's full profile, generating 0-3 high-quality insights that reference specific answers as evidence. This prevents generic observations and ensures meaningful connections.
+
+---
+
+## Setup & Installation
+
+### Prerequisites
+
+- Python 3.8+
+- Environment Variables:
+  - `OPENAI_API_KEY`
+  - `SPOTIFY_CLIENT_ID`
+  - `SPOTIFY_CLIENT_SECRET`
+
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone <repository-url>
+```
+
+2. Install dependencies:
+```bash
+pip install -r src/requirements.txt
+```
+
+3. Set environment variables:
+```bash
+export OPENAI_API_KEY="your-openai-api-key"
+export SPOTIFY_CLIENT_ID="your-spotify-client-id"
+export SPOTIFY_CLIENT_SECRET="your-spotify-client-secret"
+```
+
+4. Run the Flask application:
+```bash
+cd src
+python app.py
+```
+
+5. Open your browser to `http://localhost:5000`
+
+### Data Processing Pipeline (Optional)
+
+To regenerate survey embeddings and entity extractions from original data: `data\raw\music_survey_data.csv`:
+
+```bash
+cd scripts
+python 01_clean_data.py
+python 02_extract_genre_bands.py
+python 04_generate_survey_embeddings.py
+python 05_extract_music_entities.py
+python 06_extract_favourite_artist.py
+```
