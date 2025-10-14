@@ -1,5 +1,4 @@
-- add personal avatar creation 
-- large format respondent avatar on click
+- add spotify link for favourite band (and genre?)
 
 - clean up code / documentation / file structure
 

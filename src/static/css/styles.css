@@ -116,7 +116,7 @@ body {
 }
 
 .question-card:hover::before {
-  opacity: 0.6;
+  opacity: 0.2;
 }
 
 @keyframes rotateBorder {
@@ -308,11 +308,23 @@ button {
   margin-bottom: 20px;
 }
 
+.welcome-screen h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #a78bfa;
+  margin-bottom: 1em;
+  letter-spacing: 0.5px;
+}
+
+.welcome-screen li {
+  margin-bottom: 0.7em;
+}
+
 .welcome-screen p {
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   color: #aaa;
   margin-bottom: 40px;
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
 .btn-start {
