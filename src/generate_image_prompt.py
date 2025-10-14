@@ -46,7 +46,7 @@ class MusicGenre(Enum):
     KPOP = "k-pop"
     OTHER = "other"
 
-def create_image_prompt_from_survey(data):
+def create_image_prompt_from_survey(data, with_band=True):
     """
     Generate musical avatar image prompt from survey data
     """
@@ -72,7 +72,8 @@ def create_image_prompt_from_survey(data):
         intensity_level=intensity_level[0],
         sociality_level=sociality_level[0],
         favourite_genre=favourite_genre,
-        favourite_band=favourite_band
+        favourite_band=favourite_band,
+        with_band=with_band
     )
 
     return avatar_prompt
@@ -137,15 +138,16 @@ def generate_physical_description(ethnicity, age, gender):
     return ", ".join(parts) if parts else "person"
 
 
-def generate_avatar_prompt(physical_desc, ai_level, intensity_level, sociality_level, favourite_genre, favourite_band):
+def generate_avatar_prompt(physical_desc, ai_level, intensity_level, sociality_level, favourite_genre, favourite_band, with_band=True):
     """Generate image prompt for musical avatar"""
 
     prompt = f"Avatar of a {physical_desc}, "
 
     wearing = "wearing "
-    # Band t-shirt - REQUIRED if band is known
-    if pd.notna(favourite_band) and str(favourite_band).lower() not in ['unknown', 'unknown artist', 'nan']:
-        wearing += f"a {favourite_band} t-shirt, "
+    # Band t-shirt
+    if with_band:
+        if pd.notna(favourite_band) and str(favourite_band).lower() not in ['unknown', 'unknown artist', 'nan']:
+            wearing += f"a {favourite_band}  t-shirt, "
 
     if pd.notna(favourite_genre):
         genre_lower = str(favourite_genre).lower()

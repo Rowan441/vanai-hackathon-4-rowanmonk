@@ -364,30 +364,65 @@ def generate_avatar():
             }), 404
 
         # Generate image prompt from survey data
-        image_prompt = create_image_prompt_from_survey(matched_response)
+        image_prompt = create_image_prompt_from_survey(matched_response, with_band=True)
 
         print(f"Generated prompt: {image_prompt}")
 
-        # Generate image using gpt with base64 response
-        response = client.images.generate(
-            model="gpt-image-1",
-            prompt=image_prompt,
-            size="1024x1024",
-            quality="medium",
-            n=1,
-        )
+        # Try generating image with band reference first
+        try:
+            response = client.images.generate(
+                model="gpt-image-1",
+                prompt=image_prompt,
+                size="1024x1024",
+                quality="medium",
+                n=1,
+            )
 
-        # Get base64 encoded image data
-        image_b64 = response.data[0].b64_json
+            # Get base64 encoded image data
+            image_b64 = response.data[0].b64_json
 
-        # Create data URI for frontend
-        image_data_uri = f"data:image/png;base64,{image_b64}"
+            # Create data URI for frontend
+            image_data_uri = f"data:image/png;base64,{image_b64}"
 
-        return jsonify({
-            "status": "success",
-            "image_url": image_data_uri,
-            "prompt": image_prompt
-        }), 200
+            return jsonify({
+                "status": "success",
+                "image_url": image_data_uri,
+                "prompt": image_prompt
+            }), 200
+
+        except Exception as dalle_error:
+            error_str = str(dalle_error)
+
+            # Check if it's a safety/moderation error
+            if 'safety system' in error_str.lower() or 'moderation_blocked' in error_str.lower() or 'content_policy' in error_str.lower():
+                print(f"Safety block with band reference, retrying without band: {dalle_error}")
+
+                # Retry without band reference
+                image_prompt = create_image_prompt_from_survey(matched_response, with_band=False)
+                print(f"Retrying with prompt: {image_prompt}")
+
+                response = client.images.generate(
+                    model="gpt-image-1",
+                    prompt=image_prompt,
+                    size="1024x1024",
+                    quality="medium",
+                    n=1,
+                )
+
+                # Get base64 encoded image data
+                image_b64 = response.data[0].b64_json
+
+                # Create data URI for frontend
+                image_data_uri = f"data:image/png;base64,{image_b64}"
+
+                return jsonify({
+                    "status": "success",
+                    "image_url": image_data_uri,
+                    "prompt": image_prompt
+                }), 200
+            else:
+                # Other DALL-E errors
+                raise dalle_error
 
     except Exception as e:
         print(f"Error generating avatar: {str(e)}")
@@ -491,7 +526,8 @@ Guidelines:
             intensity_level=intensity_level,
             sociality_level=sociality_level,
             favourite_genre=favourite_genre,
-            favourite_band=favourite_band
+            favourite_band=favourite_band,
+            with_band=True
         )
 
         print(f"Generated user avatar prompt: {avatar_prompt}")
@@ -522,12 +558,39 @@ Guidelines:
 
             # Check if it's a safety/moderation error
             if 'safety system' in error_str.lower() or 'moderation_blocked' in error_str.lower() or 'content_policy' in error_str.lower():
-                print(f"Safety block error: {dalle_error}")
+                print(f"Safety block with band reference, retrying without band: {dalle_error}")
+
+                # Retry without band reference
+                avatar_prompt = generate_avatar_prompt(
+                    physical_desc=physical_description,
+                    ai_level=ai_level,
+                    intensity_level=intensity_level,
+                    sociality_level=sociality_level,
+                    favourite_genre=favourite_genre,
+                    favourite_band=favourite_band,
+                    with_band=False
+                )
+                print(f"Retrying with prompt: {avatar_prompt}")
+
+                image_response = client.images.generate(
+                    model="gpt-image-1",
+                    prompt=avatar_prompt,
+                    size="1024x1024",
+                    quality="medium",
+                    n=1,
+                )
+
+                # Get base64 encoded image data
+                image_b64 = image_response.data[0].b64_json
+
+                # Create data URI for frontend
+                image_data_uri = f"data:image/png;base64,{image_b64}"
+
                 return jsonify({
-                    'status': 'error',
-                    'message': 'Avatar generation blocked: Your description may contain copyrighted characters or inappropriate content. Please try a different description.',
-                    'error_type': 'safety_block'
-                }), 400
+                    'status': 'success',
+                    'image_url': image_data_uri,
+                    'prompt': avatar_prompt
+                })
             else:
                 # Other DALL-E errors
                 print(f"DALL-E error: {dalle_error}")
