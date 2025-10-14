@@ -165,7 +165,7 @@ def generate_avatar_prompt(physical_desc, ai_level, intensity_level, sociality_l
             "Passionate intense expression, surrounded by concert tickets and music memorabilia. ",
             "Ecstatic energy with multiple instruments and vinyl records scattered around. ",
             "Electric intensity in their eyes, wearing headphones. ",
-            "Fervent music lover aura with festival wristbands and setlists as accessories. "
+            "Fervent music lover aura with festival wristbands. "
         ]
         prompt += random.choice(expressions)
     elif intensity_level == IntensityLevel.ENGAGED:

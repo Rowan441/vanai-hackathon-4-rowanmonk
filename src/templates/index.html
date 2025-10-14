@@ -743,7 +743,7 @@
           }
           // Friend shares (single value with highlighting)
           const favorite_bandEl = document.getElementById("matchFavBand");
-          favorite_bandEl.textContent = profile.favorite_band || "N/A";
+          favorite_bandEl.innerHTML = profile.favorite_band || "N/A";
           if (highlightedFields.has("matchFavBand")) {
             favorite_bandEl.classList.add("highlighted-single-value");
           }

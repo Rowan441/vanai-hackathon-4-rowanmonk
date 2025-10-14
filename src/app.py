@@ -4,6 +4,7 @@ import csv
 import os
 import sys
 import numpy as np
+import pandas as pd
 from collections import Counter
 from openai import OpenAI
 import re
@@ -194,10 +195,16 @@ def submit_answers():
             matched_response.get('Q19_Lyric_that_stuck_with_you', 'N/A'),
             matched_response.get('Q19_extracted_entities')
         )
-        favorite_band_html = convert_entities_to_html(
-            matched_response.get('extracted_favourite_band', 'N/A'),
-            matched_response.get('extracted_favourite_band_entities')
-        )
+        # Handle favorite band with Spotify URL if available
+        favorite_band_name = matched_response.get('extracted_favourite_band', 'N/A')
+        favorite_band_spotify_url = matched_response.get('extracted_favourite_band_spotify_url')
+
+        if favorite_band_spotify_url and pd.notna(favorite_band_spotify_url):
+            favorite_band_html = f'<a href="{favorite_band_spotify_url}" target="_blank" class="music-entity">{favorite_band_name}</a>'
+        else:
+            favorite_band_html = favorite_band_name
+
+        print(favorite_band_spotify_url)
 
         profile = RespondentProfile(
             age=matched_response.get('Age', 'N/A'),
