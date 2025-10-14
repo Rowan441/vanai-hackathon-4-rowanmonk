@@ -129,11 +129,33 @@
 
       <!-- Fullscreen Avatar Modal -->
       <div id="avatarFullscreenModal" class="modal hidden">
-        <div class="modal-content" style="padding: 0;">
-          <button class="modal-close" id="closeFullscreenModal" style="position: absolute; top: 20px; right: 20px; z-index: 10001;">&times;</button>
-          <img id="fullscreenAvatarImage" src="" alt="Avatar" style="max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 12px;">
-          <div style="text-align: center; margin-top: 15px; margin-bottom: 15px;">
-            <button class="btn-next id="downloadAvatarBtn" style="display: inline-flex; align-items: center; gap: 8px;">
+        <div class="modal-content" style="padding: 0">
+          <button
+            class="modal-close"
+            id="closeFullscreenModal"
+            style="position: absolute; top: 20px; right: 20px; z-index: 10001"
+          >
+            &times;
+          </button>
+          <img
+            id="fullscreenAvatarImage"
+            src=""
+            alt="Avatar"
+            style="
+              max-width: 100%;
+              max-height: 85vh;
+              object-fit: contain;
+              border-radius: 12px;
+            "
+          />
+          <div
+            style="text-align: center; margin-top: 15px; margin-bottom: 15px"
+          >
+            <button
+              class="btn-next"
+              id="downloadAvatarBtn"
+              style="display: inline-flex; align-items: center; gap: 8px"
+            >
               <span>Download Avatar</span>
             </button>
           </div>
@@ -208,7 +230,7 @@
                     src=""
                     alt="Your AI Avatar"
                     class="avatar-image clickable-avatar"
-                    style="cursor: pointer;"
+                    style="cursor: pointer"
                   />
                   <button class="recreate-avatar-btn" id="recreateUserAvatar">
                     <span>🔄 Recreate Avatar</span>
@@ -229,7 +251,7 @@
                     src=""
                     alt="Match's AI Avatar"
                     class="avatar-image clickable-avatar"
-                    style="cursor: pointer;"
+                    style="cursor: pointer"
                   />
                 </div>
               </div>
@@ -1168,9 +1190,15 @@
         .getElementById("recreateUserAvatar")
         ?.addEventListener("click", function () {
           // Hide the current avatar and show placeholder with button
-          document.getElementById("userAvatarContainer").classList.add("hidden");
-          document.getElementById("userAvatarPlaceholder").classList.remove("hidden");
-          document.getElementById("createUserAvatar").classList.remove("hidden");
+          document
+            .getElementById("userAvatarContainer")
+            .classList.add("hidden");
+          document
+            .getElementById("userAvatarPlaceholder")
+            .classList.remove("hidden");
+          document
+            .getElementById("createUserAvatar")
+            .classList.remove("hidden");
           document.getElementById("userAvatarLoading").classList.add("hidden");
 
           // Show modal to recreate
@@ -1180,63 +1208,80 @@
       // Fullscreen avatar modal
       function openAvatarFullscreen(imageSrc, filename) {
         document.getElementById("fullscreenAvatarImage").src = imageSrc;
-        document.getElementById("avatarFullscreenModal").classList.remove("hidden");
+        document
+          .getElementById("avatarFullscreenModal")
+          .classList.remove("hidden");
 
         // Store filename for download
-        document.getElementById("downloadAvatarBtn").dataset.filename = filename;
+        document.getElementById("downloadAvatarBtn").dataset.filename =
+          filename;
       }
 
       // Close fullscreen modal
-      document.getElementById("closeFullscreenModal")?.addEventListener("click", function() {
-        document.getElementById("avatarFullscreenModal").classList.add("hidden");
-      });
+      document
+        .getElementById("closeFullscreenModal")
+        ?.addEventListener("click", function () {
+          document
+            .getElementById("avatarFullscreenModal")
+            .classList.add("hidden");
+        });
 
       // Close on outside click
-      document.getElementById("avatarFullscreenModal")?.addEventListener("click", function(e) {
-        if (e.target.id === "avatarFullscreenModal") {
-          document.getElementById("avatarFullscreenModal").classList.add("hidden");
-        }
-      });
+      document
+        .getElementById("avatarFullscreenModal")
+        ?.addEventListener("click", function (e) {
+          if (e.target.id === "avatarFullscreenModal") {
+            document
+              .getElementById("avatarFullscreenModal")
+              .classList.add("hidden");
+          }
+        });
 
       // Click handlers for avatar images
-      document.getElementById("userAvatarImage")?.addEventListener("click", function() {
-        if (this.src) {
-          openAvatarFullscreen(this.src, "my-avatar.png");
-        }
-      });
+      document
+        .getElementById("userAvatarImage")
+        ?.addEventListener("click", function () {
+          if (this.src) {
+            openAvatarFullscreen(this.src, "my-avatar.png");
+          }
+        });
 
-      document.getElementById("matchAvatarImage")?.addEventListener("click", function() {
-        if (this.src) {
-          openAvatarFullscreen(this.src, "match-avatar.png");
-        }
-      });
+      document
+        .getElementById("matchAvatarImage")
+        ?.addEventListener("click", function () {
+          if (this.src) {
+            openAvatarFullscreen(this.src, "match-avatar.png");
+          }
+        });
 
       // Download avatar
-      document.getElementById("downloadAvatarBtn")?.addEventListener("click", async function() {
-        const imageSrc = document.getElementById("fullscreenAvatarImage").src;
-        const filename = this.dataset.filename || "avatar.png";
+      document
+        .getElementById("downloadAvatarBtn")
+        ?.addEventListener("click", async function () {
+          const imageSrc = document.getElementById("fullscreenAvatarImage").src;
+          const filename = this.dataset.filename || "avatar.png";
 
-        try {
-          // Fetch the image
-          const response = await fetch(imageSrc);
-          const blob = await response.blob();
+          try {
+            // Fetch the image
+            const response = await fetch(imageSrc);
+            const blob = await response.blob();
 
-          // Create download link
-          const url = window.URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = filename;
-          document.body.appendChild(a);
-          a.click();
+            // Create download link
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
 
-          // Cleanup
-          window.URL.revokeObjectURL(url);
-          document.body.removeChild(a);
-        } catch (error) {
-          console.error("Download error:", error);
-          showToast("Failed to download avatar", "error");
-        }
-      });
+            // Cleanup
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+          } catch (error) {
+            console.error("Download error:", error);
+            showToast("Failed to download avatar", "error");
+          }
+        });
     </script>
   </body>
 </html>
