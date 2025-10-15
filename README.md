@@ -1,5 +1,4 @@
 # Music Taste Matcher
-
 **Find Your Sonic Twin**
 
 A Van AI Hackathon Round 4 Project
@@ -10,35 +9,50 @@ A Van AI Hackathon Round 4 Project
 
 ## Project Overview
 
-Music Taste Matcher is an AI-powered web application that connects people through their unique relationship with music. We surveyed hundreds of real people about their musical journey from their first beloved artist to their guilty pleasures, from how they discover new music to the lyrics that changed them. The result is a rich dataset of authentic music stories waiting to be discovered.
+Music Taste Matcher is an AI-powered web application that connects people through their unique relationship with music. 
 
-When users answer six thoughtfully crafted questions about their own musical identity, our application uses OpenAI's text embedding models to perform semantic matching, finding the survey respondent whose musical DNA most closely mirrors theirs. This isn't just about matching favorite genres or artists it's about matching the deeper relationship people have with music: how they discover it, when they listen, how intensely they engage, and how they share it with others.
+When users answer six thoughtfully crafted, open eneded questions about their own musical identity, our application uses AI models to perform semantic matching, finding the survey respondent whose musical DNA most closely mirrors theirs. This isn't just about matching favorite genres or artists it's about matching the deeper relationship people have with music: how they discover it, when they listen, how intensely they engage, and how they share it with others.
 
-The experience goes beyond the match itself. Users discover their twin's complete music profile, enriched with Spotify links to explore their favorite artists and songs directly. Our AI analysis provides personalized insights explaining why they were paired together, highlighting genuine connections in their responses. To visualize these musical identities, we generate custom illustrated avatars for both the user and their match, with artistic styles that reflect their attitudes toward AI, music intensity levels, and social sharing behaviors.
+Once the match is found, users discover their twin's complete music profile, enriched with inline Spotify links to explore their favorite artists and songs directly. Our AI analysis provides personalized insights explaining why they were paired together, highlighting genuine connections in their responses. To visualize these musical identities, we generate custom illustrated avatars for both the user and their match, with artistic styles that reflect their attitudes toward AI, music intensity levels, and social sharing behaviors.
 
 Music Taste Matcher transforms abstract survey data into meaningful human connections, proving that our relationship with music is as unique as our fingerprints and just as recognizable when you know what to look for.
-
----
 
 ## Technical Implementation
 
 ### Architecture & Stack
 
-The application is built with a Flask backend and vanilla JavaScript frontend, prioritizing rapid development and straightforward deployment. The backend handles API orchestration, embeddings generation, and real-time avatar creation, while the frontend provides an engaging, progressive questionnaire experience with smooth animations and responsive design.
-
-### AI & Matching System
-
-At the core is OpenAI's `text-embedding-3-small` model, which converts user responses into high-dimensional vector representations. We pre-computed embeddings for all survey respondents, enabling real-time matching via cosine similarity search. The identity string construction intelligently synthesizes user responses into a coherent narrative that captures both explicit answers and implicit preferences.
-
-Our avatar generation system uses DALL-E (gpt-image-1) with dynamically constructed prompts. We map survey responses to three key dimensions: AI attitude spectrum (embracer to rejector), music intensity (obsessed to minimal), and social sharing behavior (active curator to hoarder). Each dimension influences different aspects of the generated avatar aesthetic style and lighting for AI attitude, expression and accessories for intensity, and background elements for sociality. Prompt variations are randomized within categories to ensure visual diversity while maintaining thematic consistency.
+The application is built with a Python Flask backend and vanilla JavaScript frontend and uses the OpenAI python client library.
 
 ### Data Pipeline & Entity Extraction
 
-The data processing pipeline consists of multiple scripts that progressively enrich the survey data. We use GPT-4o-mini for music entity extraction, identifying songs, artists, and albums in free-text responses through inline annotation with JSON metadata. The extraction system includes robust validation with retry logic, ensuring text fidelity while enabling Spotify URL enrichment. Entity annotations are converted to clickable Spotify links in the UI, allowing users to immediately explore their match's musical taste.
+The data processing pipeline consists of scripts that progressively enrich the survey data. We pass templated prompts to the gpt-4o-mini API to semantically analyze the contents of the open-ended survey responses. Removing low effort survey responses, extrapolating favorite songs/artists. Then finally, performing inline entity annotation to identify and markup songs & artists. A custom prompt instructs the model to wrap detected entities with delimiter-enclosed JSON metadata (`||{"type": "song", "name": "Track Name", "artist": "Artist Name"}matched_text||`). Each extraction undergoes validation to ensure non-overlapping annotations, correct JSON structure, and text content preservation. 
 
-The matching insights feature employs a secondary LLM call that compares user responses with their match's full profile, generating 0-3 high-quality insights that reference specific answers as evidence. This prevents generic observations and ensures meaningful connections.
+Extracted entities are enriched with Spotify metadata via the Spotify API, adding links that are rendered in the frontend.
 
----
+Example Input:
+```
+Abracadabra by Gaga, and just cause
+```
+
+Example Output:
+```
+||{"type": "song", "name": "Abracadabra", "artist": "Lady Gaga"}Abracadabra|| by ||{"type": "artist", "name": "Lady Gaga"}Gaga||, and just cause
+```
+
+Example Usage:
+![Example of annotation within the results screen](src\static\images\image.png)
+
+### AI Survey Matching System
+
+At the core is OpenAI's `text-embedding-3-small` model, which converts structured identity strings into vector representations for semantic similarity matching.
+
+Identity strings are constructed documents that synthesize survey responses into a coherent narrative format. For each survey respondent, we programmatically assemble multi-line text that includes all the relevant survey information that embeddings can meaningfully encode.
+
+When users complete the questionnaire, their answers are formatted into an equivalent identity string structure, ensuring structural alignment between user input and pre-computed survey embeddings. Cosine similarity search then identifies the survey respondent whose embedded identity vector is closest in semantic space, matching not just on explicit genre preferences but on deeper behavioral patterns, discovery habits, and emotional relationships with music.
+
+### Avatar Image Generation
+
+Our avatar generation system uses the gpt-image-1 model with dynamically constructed prompts. We map survey responses to key dimensions: AI attitude spectrum (embracer to rejector), and music intensity (obsessed to minimal) and favourite artist. Each dimension influences different aspects of the generated avatar aesthetic,  lighting, expression, and background elements. Prompt variations are randomized within categories to ensure visual diversity while maintaining thematic consistency.
 
 ## Setup & Installation
 
