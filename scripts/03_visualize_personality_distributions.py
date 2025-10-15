@@ -21,7 +21,7 @@ def calculate_all_scores(sample_size=None):
     """Calculate personality scores for all survey respondents"""
 
     # Load the processed survey data
-    input_csv = os.path.join(BASE_DIR, "../data/processed/02_music_survey_with_genres.csv")
+    input_csv = os.path.join(BASE_DIR, "../data/processed/04_music_survey_with_artist_urls.csv")
 
     print(f"Loading data from {input_csv}...")
     df = pd.read_csv(input_csv)
@@ -66,7 +66,7 @@ def plot_personality_distributions(df):
 
     # Set up the figure with 3 subplots (one for each dimension)
     fig, axes = plt.subplots(3, 1, figsize=(14, 10))
-    fig.suptitle('Music Personality Distribution', fontsize=16, fontweight='bold')
+    fig.suptitle('Survey Respondent\'s Music Personality Distribution', fontsize=16, fontweight='bold')
 
     # Color maps for each dimension
     ai_colors = {
@@ -112,8 +112,8 @@ def plot_personality_distributions(df):
                 ha='center', va='bottom', fontsize=10, fontweight='bold')
 
     ax1.set_ylabel('Count', fontsize=12, fontweight='bold')
-    ax1.set_xlabel('AI Attitude Level', fontsize=11)
-    ax1.set_title('AI Attitude Distribution', fontsize=12, pad=10)
+    ax1.set_xlabel('AI Attitude Level', fontsize=10)
+    ax1.set_title('AI Attitude Distribution', fontsize=12, pad=10, fontweight='bold')
     ax1.grid(axis='y', alpha=0.3, linestyle='--')
     ax1.set_axisbelow(True)
 
@@ -148,9 +148,9 @@ def plot_personality_distributions(df):
     ]
     ax2.legend(handles=legend_elements, loc='upper right', framealpha=0.9, fontsize=9)
 
-    ax2.set_xlabel('Normalized Score (0 = Minimal, 1 = Obsessed)', fontsize=11)
+    ax2.set_xlabel('Normalized Score', fontsize=10)
     ax2.set_ylabel('Count', fontsize=12, fontweight='bold')
-    ax2.set_title('Music Intensity Distribution', fontsize=12, pad=10)
+    ax2.set_title('Music Intensity Distribution', fontsize=12, pad=10, fontweight='bold')
     ax2.grid(axis='y', alpha=0.3, linestyle='--')
     ax2.set_axisbelow(True)
 
@@ -181,9 +181,9 @@ def plot_personality_distributions(df):
     ]
     ax3.legend(handles=legend_elements, loc='upper right', framealpha=0.9, fontsize=9)
 
-    ax3.set_xlabel('Normalized Score (0 = Hoarder, 1 = Active Curator)', fontsize=11)
+    ax3.set_xlabel('Normalized Score', fontsize=10)
     ax3.set_ylabel('Count', fontsize=12, fontweight='bold')
-    ax3.set_title('Music Sociality Distribution', fontsize=12, pad=10)
+    ax3.set_title('Music Sociality Distribution', fontsize=12, pad=10, fontweight='bold')
     ax3.grid(axis='y', alpha=0.3, linestyle='--')
     ax3.set_axisbelow(True)
 
