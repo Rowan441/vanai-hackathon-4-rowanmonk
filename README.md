@@ -11,7 +11,7 @@ A Van AI Hackathon Round 4 Project
 
 Music Taste Matcher is an AI-powered web application that connects people through their unique relationship with music. 
 
-When users answer six thoughtfully crafted, open eneded questions about their own musical identity, our application uses AI models to perform semantic matching, finding the survey respondent whose musical DNA most closely mirrors theirs. This isn't just about matching favorite genres or artists it's about matching the deeper relationship people have with music: how they discover it, when they listen, how intensely they engage, and how they share it with others.
+When users answer six thoughtfully crafted, open ended questions about their own musical identity, our application uses AI models to perform semantic matching, finding the survey respondent whose musical DNA most closely mirrors theirs. This isn't just about matching favorite genres or artists, it's about matching the deeper relationship people have with music: how they discover it, when they listen, how intensely they engage, and how they share it with others.
 
 Once the match is found, users discover their twin's complete music profile, enriched with inline Spotify links to explore their favorite artists and songs directly. Our AI analysis provides personalized insights explaining why they were paired together, highlighting genuine connections in their responses. To visualize these musical identities, we generate custom illustrated avatars for both the user and their match, with artistic styles that reflect their attitudes toward AI, music intensity levels, and social sharing behaviors.
 
