@@ -40,7 +40,7 @@ Example Output:
 ```
 
 Example Usage:
-![Example of annotation within the results screen](src\static\images\image.png)
+![Example of annotation within the results screen](src/static/images/image.png)
 
 ### AI Survey Matching System
 
